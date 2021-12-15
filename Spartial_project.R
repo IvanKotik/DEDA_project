@@ -28,7 +28,7 @@ classes_mp <- list(food_and_drinks = c("bakery", "bar", "biergarten", "cafe", "f
 
 table(berlin_po$fclass)
 
-classes_зщ <- list(food_and_drinks = c("bakery", "bar", "biergarten", "cafe", "fast_food", "food_court", "pub", "restaurant"),
+classes_po <- list(food_and_drinks = c("bakery", "bar", "biergarten", "cafe", "fast_food", "food_court", "pub", "restaurant"),
                    shops_consumables = c("butcher", "convenience", "department_store", "kiosk", "market_place", "supermarket"),
                    entertaining = c("arts_centre", "cinema", "community_centre", "library", "nightclub", "theatre", "zoo"),
                    other_shops = c("bank", "beauty_shop", "bicycle_shop", "bookshop", "clothes", "florist", "hairdresser", "mall", "shoe_shop"),
@@ -37,3 +37,18 @@ classes_зщ <- list(food_and_drinks = c("bakery", "bar", "biergarten", "cafe", 
                    parks = "park",
                    pets = c("dog_park", "veterinary"),
                    sport = c("pitch", "sports_centre", "stadium", "swimming_pool", "track"))
+
+a <- as.data.table(table(berlin_mp$osm_id))
+table(a[,2])
+# 18091 x 1 times present, 76 x 2 times present, 1 x 3 times present // 0.42 % duplicates in id's
+rm(a)
+
+a <- as.data.table(table(berlin_po$osm_id))
+table(a[,2])
+# 75434 x 1 times present, 211 x 2 times present, 1 x 3 times present // 0.28% duplicates in id's
+rm(a)
+
+a <- as.data.table(table(rbind(berlin_mp[, 1], berlin_po[, 1])))
+table(a[,2])
+# 93525 x 1 times present, 287 x 2 times present, 2 x 3 times present // 0.31% duplicates
+# Conclusion: no need to clear up the data within polygon and points all observations are unique
