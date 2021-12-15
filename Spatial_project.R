@@ -53,4 +53,27 @@ table(a[,2])
 # 93525 x 1 times present, 287 x 2 times present, 2 x 3 times present // 0.31% duplicates
 # Conclusion: no need to clear up the data within polygon and points all observations are unique
 
-123
+# for merging with the tables
+classes_used <- data.table(c("bakery", "bar", "biergarten", "cafe", "fast_food", "food_court", "pub", "restaurant",
+                             "butcher", "convenience", "department_store", "kiosk", "market_place", "supermarket",
+                             "arts_centre", "cinema", "community_centre", "library", "nightclub", "theatre", "zoo",
+                             "bank", "beauty_shop", "bicycle_shop", "bookshop", "clothes", "florist", "hairdresser", "mall", "shoe_shop",
+                             "artwork", "attraction", "fountain", "monument", "observation_tower", "tower",
+                             "kindergarten", "playground",
+                             "parks",
+                             "dog_park", "veterinary",
+                             "pitch", "sports_centre", "stadium", "swimming_pool", "track"),
+                           c(rep("food_and_drinks", times = 8),
+                             rep("shops_consumables", times = 6),
+                             rep("entertaining", times = 7),
+                             rep("other_shops", times = 9),
+                             rep("landmarks", times = 6),
+                             rep("kids", times = 2),
+                             rep("park", times = 1),
+                             rep("pets", times = 2),
+                             rep("sports", times = 5)
+                           ))
+
+# Adding the categories to the source data and filtering out what is not useful
+berlin_mp <- berlin_mp[classes_used, on = .(fclass == V1)]
+berlin_po <- berlin_po[classes_used, on = .(fclass == V1)]
