@@ -52,3 +52,5 @@ a <- as.data.table(table(rbind(berlin_mp[, 1], berlin_po[, 1])))
 table(a[,2])
 # 93525 x 1 times present, 287 x 2 times present, 2 x 3 times present // 0.31% duplicates
 # Conclusion: no need to clear up the data within polygon and points all observations are unique
+
+123
