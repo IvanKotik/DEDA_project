@@ -120,16 +120,22 @@ ggplot(filter(berlin_po_filtered, category == classes_vector[i]), aes(x, y))+
   scale_fill_viridis_c()+
   labs(title = classes_vector[i])
 }
-plot_fucntion(9)
+plot_fucntion(1)
 
 # importing and checking the border map
 berlin_countour <- read_sf(dsn = "C://Users//ivkot//Downloads//berlin-latest-free.shp//gis_osm_places_a_free_1.shp")
 berlin_countour <- berlin_countour[, 5:6]
 plot(berlin_countour)
 
+# ggplot version, will use further
+ggplot(berlin_countour)+
+  geom_sf()+
+  coord_sf()
 
-ggplot(filter(berlin_po_filtered, category == classes_vector[1]), aes(x, y))+
-  geom_hex(bins = 50)+
-  scale_fill_viridis_c()+
+# trying to combine the borders with the hex
+ggplot() +
+  geom_hex(data = filter(berlin_po_filtered, category == classes_vector[1]), mapping = aes(x, y), bins = 50) +
+  scale_fill_viridis_c() +
+  geom_sf(data = berlin_countour, fill = "transparent", color = "white")+
   labs(title = classes_vector[1])
 
