@@ -7,12 +7,21 @@ install.packages("ggmap")
 library(ggmap)
 install.packages("sf")
 library(sf)
+install.packages("cartography")
+library(cartography)
 install.packages("osmdata")
 library(osmdata)
+install.packages("maptiles")
+library(maptiles)
+library(ggplot2)
+install.packages("hexbin")
+library(hexbin)
+library(RColorBrewer)
+options(device = "windows") # for buggy build
 
 # importing OSM data from daten.berlin.de
-berlin_mp <- as.data.table(read_sf(dsn = "C://Users//ivkot//Downloads//berlin-latest-free.shp//gis_osm_pois_a_free_1.shp"))
-berlin_po <- as.data.table(read_sf(dsn = "C://Users//ivkot//Downloads//berlin-latest-free.shp//gis_osm_pois_free_1.shp"))
+berlin_mp <- read_sf(dsn = "C://Users//ivkot//Downloads//berlin-latest-free.shp//gis_osm_pois_a_free_1.shp")
+berlin_po <- read_sf(dsn = "C://Users//ivkot//Downloads//berlin-latest-free.shp//gis_osm_pois_free_1.shp")
 
 # picking out the classes to be used
 table(berlin_mp$fclass)
@@ -54,26 +63,59 @@ table(a[,2])
 # Conclusion: no need to clear up the data within polygon and points all observations are unique
 
 # for merging with the tables
-classes_used <- data.table(c("bakery", "bar", "biergarten", "cafe", "fast_food", "food_court", "pub", "restaurant",
-                             "butcher", "convenience", "department_store", "kiosk", "market_place", "supermarket",
-                             "arts_centre", "cinema", "community_centre", "library", "nightclub", "theatre", "zoo",
-                             "bank", "beauty_shop", "bicycle_shop", "bookshop", "clothes", "florist", "hairdresser", "mall", "shoe_shop",
-                             "artwork", "attraction", "fountain", "monument", "observation_tower", "tower",
-                             "kindergarten", "playground",
-                             "parks",
-                             "dog_park", "veterinary",
-                             "pitch", "sports_centre", "stadium", "swimming_pool", "track"),
-                           c(rep("food_and_drinks", times = 8),
-                             rep("shops_consumables", times = 6),
-                             rep("entertaining", times = 7),
-                             rep("other_shops", times = 9),
-                             rep("landmarks", times = 6),
-                             rep("kids", times = 2),
-                             rep("park", times = 1),
-                             rep("pets", times = 2),
-                             rep("sports", times = 5)
-                           ))
+classes_used <- data.table(fclass = c("bakery", "bar", "biergarten", "cafe", "fast_food", "food_court", "pub", "restaurant",
+                                      "butcher", "convenience", "department_store", "kiosk", "market_place", "supermarket",
+                                      "arts_centre", "cinema", "community_centre", "library", "nightclub", "theatre", "zoo",
+                                      "bank", "beauty_shop", "bicycle_shop", "bookshop", "clothes", "florist", "hairdresser", "mall", "shoe_shop",
+                                      "artwork", "attraction", "fountain", "monument", "observation_tower", "tower",
+                                      "kindergarten", "playground",
+                                      "parks",
+                                      "dog_park", "veterinary",
+                                      "pitch", "sports_centre", "stadium", "swimming_pool", "track"),
+                         category = c(rep("food_and_drinks", times = 8),
+                                      rep("shops_consumables", times = 6),
+                                      rep("entertaining", times = 7),
+                                      rep("other_shops", times = 9),
+                                      rep("landmarks", times = 6),
+                                      rep("kids", times = 2),
+                                      rep("park", times = 1),
+                                      rep("pets", times = 2),
+                                      rep("sports", times = 5)
+                                    ),
+                         number = rep(1, times = 46))
 
 # Adding the categories to the source data and filtering out what is not useful
-berlin_mp <- berlin_mp[classes_used, on = .(fclass == V1)]
-berlin_po <- berlin_po[classes_used, on = .(fclass == V1)]
+# berlin_mp <- berlin_mp[classes_used, on = .(fclass == V1)]
+# berlin_po <- berlin_po[classes_used, on = .(fclass == V1)]
+
+# Restructuring the data, the atempt above did not work due to data.table conflict
+berlin_mp_two <- inner_join(berlin_mp, classes_used, by = "fclass")
+berlin_po_two <- inner_join(berlin_po, classes_used, by = "fclass")
+
+# Get the map out
+tiles <- get_tiles(x = berlin_po_two, provider = "OpenStreetMap")
+tilesLayer(tiles)
+
+# Chronolayer test
+choroLayer(x = filter(berlin_po_two, category == "food_and_drinks"),
+           var = "number", method = "quantile", nclass = 8)
+
+# typoLayer
+typoLayer(x = filter(berlin_po_two, category == "food_and_drinks"),
+          var = "number")
+
+# Two working plots
+plot(st_geometry(berlin_mp_two))
+plot(st_geometry(filter(berlin_po_two, category == "kids")))
+
+# trying out with ggplot2
+as.character(berlin_po_two$geometry[1])
+library(stringr)
+#  extracting the coordinates
+str_extract(as.character(berlin_po_two$geometry[1]), "\\d.\\.\\d.*(?=,)")
+str_extract(as.character(berlin_po_two$geometry[1]), "\\d*.\\d*(?=\\))")
+# !!!!!!!!!!!!!!!!!! next: convert to numeric, plot in the formula below
+
+bin <- hexbin(, xbins=40)
+my_colors=colorRampPalette(rev(brewer.pal(11,'Spectral')))
+plot(bin, main="" , colramp=my_colors , legend=F )
