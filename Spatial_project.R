@@ -111,11 +111,15 @@ plot(st_geometry(filter(berlin_po_two, category == "kids")))
 # trying out with ggplot2
 as.character(berlin_po_two$geometry[1])
 library(stringr)
-#  extracting the coordinates
-str_extract(as.character(berlin_po_two$geometry[1]), "\\d.\\.\\d.*(?=,)")
-str_extract(as.character(berlin_po_two$geometry[1]), "\\d*.\\d*(?=\\))")
-# !!!!!!!!!!!!!!!!!! next: convert to numeric, plot in the formula below
 
-bin <- hexbin(, xbins=40)
-my_colors=colorRampPalette(rev(brewer.pal(11,'Spectral')))
-plot(bin, main="" , colramp=my_colors , legend=F )
+#  extracting the coordinates
+coord <- data.frame(x = as.numeric(str_extract(as.character(berlin_po_two$geometry), "\\d.\\.\\d.*(?=,)")),
+                    y = as.numeric(str_extract(as.character(berlin_po_two$geometry), "\\d*.\\d*(?=\\))")))
+
+ggplot(coord, aes(x, y))+
+  geom_hex(bins = 50)
+
+ggplot(diamonds, aes(carat, price))+
+  geom_hex(bins = 20)+
+  theme_dark()+
+  scale_fill_gradient(low = "#C8FFD3", high = "#008249")
