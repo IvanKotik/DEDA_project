@@ -132,4 +132,4 @@ ggplot() +
   geom_sf(data = berlin_countour, fill = "transparent", color = "white")+
   labs(title = classes_vector[i])
 }
-plot_hex_map(2)
+plot_hex_map(3)
