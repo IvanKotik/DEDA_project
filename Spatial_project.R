@@ -47,6 +47,9 @@ classes_po <- list(food_and_drinks = c("bakery", "bar", "biergarten", "cafe", "f
                    pets = c("dog_park", "veterinary"),
                    sport = c("pitch", "sports_centre", "stadium", "swimming_pool", "track"))
 
+classes_vector <- c("food_and_drinks", "shops_consumables", "entertaining", "other_shops",
+                    "landmarks", "kids", "parks", "pets", "sport")
+
 a <- as.data.table(table(berlin_mp$osm_id))
 table(a[,2])
 # 18091 x 1 times present, 76 x 2 times present, 1 x 3 times present // 0.42 % duplicates in id's
@@ -89,37 +92,44 @@ classes_used <- data.table(fclass = c("bakery", "bar", "biergarten", "cafe", "fa
 # berlin_po <- berlin_po[classes_used, on = .(fclass == V1)]
 
 # Restructuring the data, the atempt above did not work due to data.table conflict
-berlin_mp_two <- inner_join(berlin_mp, classes_used, by = "fclass")
-berlin_po_two <- inner_join(berlin_po, classes_used, by = "fclass")
+berlin_mp_filtered <- inner_join(berlin_mp, classes_used, by = "fclass")
+berlin_po_filtered <- inner_join(berlin_po, classes_used, by = "fclass")
 
 # Get the map out
-tiles <- get_tiles(x = berlin_po_two, provider = "OpenStreetMap")
+tiles <- get_tiles(x = berlin_po_filtered, provider = "OpenStreetMap")
 tilesLayer(tiles)
 
-# Chronolayer test
-choroLayer(x = filter(berlin_po_two, category == "food_and_drinks"),
-           var = "number", method = "quantile", nclass = 8)
-
-# typoLayer
-typoLayer(x = filter(berlin_po_two, category == "food_and_drinks"),
-          var = "number")
-
 # Two working plots
-plot(st_geometry(berlin_mp_two))
-plot(st_geometry(filter(berlin_po_two, category == "kids")))
+plot(st_geometry(berlin_mp_filtered))
+plot(st_geometry(filter(berlin_po_filtered, category == "kids")))
 
 # trying out with ggplot2
-as.character(berlin_po_two$geometry[1])
+as.character(berlin_po_filtered$geometry[1])
 library(stringr)
 
 #  extracting the coordinates
-coord <- data.frame(x = as.numeric(str_extract(as.character(berlin_po_two$geometry), "\\d.\\.\\d.*(?=,)")),
-                    y = as.numeric(str_extract(as.character(berlin_po_two$geometry), "\\d*.\\d*(?=\\))")))
+coord <- data.frame(x = as.numeric(str_extract(as.character(berlin_po_filtered$geometry), "\\d.\\.\\d.*(?=,)")),
+                    y = as.numeric(str_extract(as.character(berlin_po_filtered$geometry), "\\d*.\\d*(?=\\))")))
 
-ggplot(coord, aes(x, y))+
-  geom_hex(bins = 50)
+berlin_po_filtered <- cbind(berlin_po_filtered, coord)
 
-ggplot(diamonds, aes(carat, price))+
-  geom_hex(bins = 20)+
-  theme_dark()+
-  scale_fill_gradient(low = "#C8FFD3", high = "#008249")
+# plot works
+plot_fucntion <- function(i) {
+ggplot(filter(berlin_po_filtered, category == classes_vector[i]), aes(x, y))+
+  geom_hex(bins = 50)+
+  scale_fill_viridis_c()+
+  labs(title = classes_vector[i])
+}
+plot_fucntion(9)
+
+# importing and checking the border map
+berlin_countour <- read_sf(dsn = "C://Users//ivkot//Downloads//berlin-latest-free.shp//gis_osm_places_a_free_1.shp")
+berlin_countour <- berlin_countour[, 5:6]
+plot(berlin_countour)
+
+
+ggplot(filter(berlin_po_filtered, category == classes_vector[1]), aes(x, y))+
+  geom_hex(bins = 50)+
+  scale_fill_viridis_c()+
+  labs(title = classes_vector[1])
+
