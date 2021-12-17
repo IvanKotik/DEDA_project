@@ -152,6 +152,8 @@ ggplot()+
   geom_hex(data = filter(berlin_po_filtered, category == classes_vector[1]), mapping = aes(x, y), bins = 50, alpha = 0.5)+
   scale_fill_viridis_c()
 
+# geogrid plot for further use, will be used only for story telling -------
+
 install.packages("geogrid")
 library(geogrid)
 
@@ -160,7 +162,11 @@ newgrid <- calculate_grid(shape = berlin_countour, grid_type = "hexagonal", seed
 resulthex <- assign_polygons(berlin_countour, newgrid)
 
 # fixing names to check how it fits
+berlin_countour$short_name <- str_extract(berlin_countour$name, "[[:upper:]].{2,5}")
 
+# the hex plot
 tm_shape(resulthex) +
   tm_polygons() +
-  tm_text("name")
+  tm_text("short_name")
+
+# ------------------------------------------------------------------------
