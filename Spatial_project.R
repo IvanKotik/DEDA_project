@@ -13,11 +13,10 @@ install.packages("osmdata")
 library(osmdata)
 install.packages("maptiles")
 library(maptiles)
-library(ggplot2)
 install.packages("hexbin")
 library(hexbin)
 library(RColorBrewer)
-options(device = "windows") # for buggy build
+# options(device = "windows") # for pycharm 2012.3.1
 
 # importing OSM data from daten.berlin.de
 berlin_mp <- read_sf(dsn = "C://Users//ivkot//Downloads//berlin-latest-free.shp//gis_osm_pois_a_free_1.shp")
@@ -95,7 +94,7 @@ classes_used <- data.table(fclass = c("bakery", "bar", "biergarten", "cafe", "fa
 berlin_mp_filtered <- inner_join(berlin_mp, classes_used, by = "fclass")
 berlin_po_filtered <- inner_join(berlin_po, classes_used, by = "fclass")
 
-# Get the map out
+# Get the map [depreciated?]
 tiles <- get_tiles(x = berlin_po_filtered, provider = "OpenStreetMap")
 tilesLayer(tiles)
 
@@ -105,7 +104,6 @@ plot(st_geometry(filter(berlin_po_filtered, category == "kids")))
 
 # trying out with ggplot2
 as.character(berlin_po_filtered$geometry[1])
-library(stringr)
 
 #  extracting the coordinates
 coord <- data.frame(x = as.numeric(str_extract(as.character(berlin_po_filtered$geometry), "\\d.\\.\\d.*(?=,)")),
@@ -129,7 +127,40 @@ plot_hex_map <- function(i) {
 ggplot() +
   geom_hex(data = filter(berlin_po_filtered, category == classes_vector[i]), mapping = aes(x, y), bins = 50) +
   scale_fill_viridis_c() +
-  geom_sf(data = berlin_countour, fill = "transparent", color = "white")+
+  geom_sf(data = berlin_countour, fill = "transparent", color = "black")+
   labs(title = classes_vector[i])
 }
+
+# point plots
+plot_hex_map(1)
+plot_hex_map(2)
 plot_hex_map(3)
+plot_hex_map(4)
+plot_hex_map(5)
+plot_hex_map(6)
+plot_hex_map(7)
+plot_hex_map(8)
+plot_hex_map(9)
+
+ggplot()+
+  geom_sf(data = berlin_mp_filtered)
+
+# adding Kietz names
+ggplot()+
+  geom_sf(data = berlin_countour, )+
+  geom_sf_text(data = berlin_countour, aes(label = name), colour = "black", size = 2.5)+
+  geom_hex(data = filter(berlin_po_filtered, category == classes_vector[1]), mapping = aes(x, y), bins = 50, alpha = 0.5)+
+  scale_fill_viridis_c()
+
+install.packages("geogrid")
+library(geogrid)
+
+#  after testing different seeds 3 seems to be the most good looking
+newgrid <- calculate_grid(shape = berlin_countour, grid_type = "hexagonal", seed = 3)
+resulthex <- assign_polygons(berlin_countour, newgrid)
+
+# fixing names to check how it fits
+
+tm_shape(resulthex) +
+  tm_polygons() +
+  tm_text("name")
