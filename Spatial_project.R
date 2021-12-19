@@ -147,11 +147,12 @@ ggplot()+
 
 # adding Kietz names
 ggplot()+
-  geom_sf(data = berlin_countour, )+
+  geom_sf(data = berlin_countour )+
   geom_sf_text(data = berlin_countour, aes(label = name), colour = "black", size = 2.5)+
   geom_hex(data = filter(berlin_po_filtered, category == classes_vector[1]), mapping = aes(x, y), bins = 50, alpha = 0.5)+
   scale_fill_viridis_c()
 
+# -------------------------------------------------------------------------
 # geogrid plot for further use, will be used only for story telling -------
 
 install.packages("geogrid")
@@ -169,4 +170,28 @@ tm_shape(resulthex) +
   tm_polygons() +
   tm_text("short_name")
 
-# ------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+
+ggplot() +
+  geom_sf(data = berlin_countour) +
+  geom_sf_text(data = berlin_countour, aes(label = name), colour = "black", size = 2.5) +
+  scale_fill_viridis_c() +
+  geom_sf(data = berlin_mp_filtered, color = "#cc1c3d", fill = NA) +
+  geom_sf(data = berlin_po_filtered, color = "#499c54", size = 0.1)
+
+# creating the centers of the multipolygons for analysis
+st_point_on_surface(berlin_mp_filtered$geometry)
+
+# checking multipolygon sizes
+options(scipen=999)
+polysize <- st_area(berlin_mp_filtered$geometry)
+
+length(polysize)
+sort(polysize, FALSE)
+summary(sort(polysize, TRUE)[24:11828])
+summary(polysize[as.numeric(polysize) > 100*100])
+
+test <- berlin_mp_filtered
+test$area <- as.numeric(polysize)
+# !!! keep <5 HEC as dots and look at the rest separately
+length(polysize[as.numeric(polysize) > 100*100*5])
