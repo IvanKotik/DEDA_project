@@ -195,3 +195,8 @@ test <- berlin_mp_filtered
 test$area <- as.numeric(polysize)
 # !!! keep <5 HEC as dots and look at the rest separately
 length(polysize[as.numeric(polysize) > 100*100*5])
+
+ggplot() +
+  geom_sf(data = filter(berlin_mp_filtered, name == "Hundeauslaufgebiet Grunewald"), color = "#cc1c3d", fill = NA)
+
+st_cast(filter(berlin_mp_filtered, name == "Hundeauslaufgebiet Grunewald"))
