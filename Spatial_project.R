@@ -1,42 +1,30 @@
-# initiating the packages
-install.packages("tidyverse")
-library(tidyverse)
-install.packages("data.table")
-library(data.table)
-install.packages("ggmap")
-library(ggmap)
-install.packages("sf")
+# installing the libraries
 library(sf)
-install.packages("cartography")
-library(cartography)
-install.packages("osmdata")
-library(osmdata)
-install.packages("maptiles")
+library(data.table)
+library(tidyverse)
 library(maptiles)
-install.packages("hexbin")
-library(hexbin)
-library(RColorBrewer)
-# options(device = "windows") # for pycharm 2012.3.1
+library(cartography)
+library(geogrid)
+library(tmap)
+library(geogrid)
+# options(device = "windows") # for pycharm 2021.3.1
 
+# PART 1
 # importing OSM data from daten.berlin.de
+# the points of interest in multipolygon format
 berlin_mp <- read_sf(dsn = "C://Users//ivkot//Downloads//berlin-latest-free.shp//gis_osm_pois_a_free_1.shp")
+# the points of interest in point format
 berlin_po <- read_sf(dsn = "C://Users//ivkot//Downloads//berlin-latest-free.shp//gis_osm_pois_free_1.shp")
+# ------------------------------------------------------------------------------------------------
+# => these are the main dataframes that will give us the points of interest for further evaluation
+# ------------------------------------------------------------------------------------------------
 
+
+# PART 2
 # picking out the classes to be used
 table(berlin_mp$fclass)
-classes_mp <- list(food_and_drinks = c("bakery", "bar", "biergarten", "cafe", "fast_food", "food_court", "pub", "restaurant"),
-                   shops_consumables = c("butcher", "convenience", "department_store", "kiosk", "market_place", "supermarket"),
-                   entertaining = c("arts_centre", "cinema", "community_centre", "library", "nightclub", "theatre", "zoo"),
-                   other_shops = c("bank", "beauty_shop", "bicycle_shop", "bookshop", "clothes", "florist", "hairdresser", "mall", "shoe_shop"),
-                   landmarks = c("artwork", "attraction", "fountain", "monument", "observation_tower", "tower"),
-                   kids = c("kindergarten", "playground"),
-                   parks = "park",
-                   pets = c("dog_park", "veterinary"),
-                   sport = c("pitch", "sports_centre", "stadium", "swimming_pool", "track"))
-
 table(berlin_po$fclass)
-
-classes_po <- list(food_and_drinks = c("bakery", "bar", "biergarten", "cafe", "fast_food", "food_court", "pub", "restaurant"),
+classes_used <- list(food_and_drinks = c("bakery", "bar", "biergarten", "cafe", "fast_food", "food_court", "pub", "restaurant"),
                    shops_consumables = c("butcher", "convenience", "department_store", "kiosk", "market_place", "supermarket"),
                    entertaining = c("arts_centre", "cinema", "community_centre", "library", "nightclub", "theatre", "zoo"),
                    other_shops = c("bank", "beauty_shop", "bicycle_shop", "bookshop", "clothes", "florist", "hairdresser", "mall", "shoe_shop"),
@@ -48,23 +36,28 @@ classes_po <- list(food_and_drinks = c("bakery", "bar", "biergarten", "cafe", "f
 
 classes_vector <- c("food_and_drinks", "shops_consumables", "entertaining", "other_shops",
                     "landmarks", "kids", "parks", "pets", "sport")
+# ------------------------------------------------------------------------------------------------
+# => these are the all the categories that can have a significant influence on the borough rating
+# ------------------------------------------------------------------------------------------------
 
-a <- as.data.table(table(berlin_mp$osm_id))
-table(a[,2])
-# 18091 x 1 times present, 76 x 2 times present, 1 x 3 times present // 0.42 % duplicates in id's
-rm(a)
 
-a <- as.data.table(table(berlin_po$osm_id))
-table(a[,2])
+# PART 3
+# checking points and polygins for uniqueness (to exclude overlaps)
+table(as.data.table(table(berlin_mp$osm_id))[, 2])
+# => 18091 x 1 times present, 76 x 2 times present, 1 x 3 times present // 0.42 % duplicates in id's
+
+table(as.data.table(table(berlin_po$osm_id))[, 2])
 # 75434 x 1 times present, 211 x 2 times present, 1 x 3 times present // 0.28% duplicates in id's
-rm(a)
 
-a <- as.data.table(table(rbind(berlin_mp[, 1], berlin_po[, 1])))
-table(a[,2])
+table(data.table(table(rbind(berlin_po, berlin_mp)$osm_id))[, 2])
 # 93525 x 1 times present, 287 x 2 times present, 2 x 3 times present // 0.31% duplicates
-# Conclusion: no need to clear up the data within polygon and points all observations are unique
+# ------------------------------------------------------------------------------------------------
+# => no reason to believe that the data is overlapped or duplicated in any significant way
+# ------------------------------------------------------------------------------------------------
 
-# for merging with the tables
+
+# PART 4
+# filtering the multipolygon and point data
 classes_used <- data.table(fclass = c("bakery", "bar", "biergarten", "cafe", "fast_food", "food_court", "pub", "restaurant",
                                       "butcher", "convenience", "department_store", "kiosk", "market_place", "supermarket",
                                       "arts_centre", "cinema", "community_centre", "library", "nightclub", "theatre", "zoo",
@@ -93,45 +86,53 @@ classes_used <- data.table(fclass = c("bakery", "bar", "biergarten", "cafe", "fa
 # Restructuring the data, the atempt above did not work due to data.table conflict
 berlin_mp_filtered <- inner_join(berlin_mp, classes_used, by = "fclass")
 berlin_po_filtered <- inner_join(berlin_po, classes_used, by = "fclass")
+# ------------------------------------------------------------------------------------------------
+# => now the points of interest are filtered out and we are left with the needed points/polygons
+# ------------------------------------------------------------------------------------------------
 
-# Get the map [depreciated?]
-tiles <- get_tiles(x = berlin_po_filtered, provider = "OpenStreetMap")
-tilesLayer(tiles)
 
-# Two working plots
+# Get the OSMmap [depreciated]
+# tiles <- get_tiles(x = berlin_po_filtered, provider = "OpenStreetMap")
+# tilesLayer(tiles)
+
+# two working plots
 plot(st_geometry(berlin_mp_filtered))
 plot(st_geometry(filter(berlin_po_filtered, category == "kids")))
 
-# trying out with ggplot2
-as.character(berlin_po_filtered$geometry[1])
 
-#  extracting the coordinates
-coord <- data.frame(x = as.numeric(str_extract(as.character(berlin_po_filtered$geometry), "\\d.\\.\\d.*(?=,)")),
-                    y = as.numeric(str_extract(as.character(berlin_po_filtered$geometry), "\\d*.\\d*(?=\\))")))
+# PART 5 (skippable?)
+# regex to extract extracting the coordinates from the sf file if needed
+data.frame(x = as.numeric(str_extract(as.character(berlin_po_filtered$geometry), "\\d.\\.\\d.*(?=,)")),
+           y = as.numeric(str_extract(as.character(berlin_po_filtered$geometry), "\\d*.\\d*(?=\\))")))
 
-berlin_po_filtered <- cbind(berlin_po_filtered, coord)
 
-# importing and checking the border map
+# PART 6
+# importing and checking the countor map
 berlin_countour <- read_sf(dsn = "C://Users//ivkot//Downloads//berlin-latest-free.shp//gis_osm_places_a_free_1.shp")
+berlin_countour <- filter(berlin_countour, fclass == "suburb")
 berlin_countour <- berlin_countour[, 5:6]
 plot(berlin_countour)
-
-# ggplot version, will use further
 ggplot(berlin_countour)+
-  geom_sf()+
-  coord_sf()
+  geom_sf()
+# ------------------------------------------------------------------------------------------------
+# => this is the main division of the city by area used further
+# ------------------------------------------------------------------------------------------------
 
-# trying to combine the borders with the hex
 
+# PART 7
+# making a hex-fill based on data and map
 plot_hex_map <- function(i) {
 ggplot() +
-  geom_hex(data = filter(berlin_po_filtered, category == classes_vector[i]), mapping = aes(x, y), bins = 50) +
+  geom_hex(data = filter(berlin_po_filtered, category == classes_vector[i]),
+           mapping = aes(x = as.numeric(str_extract(as.character(filter(berlin_po_filtered, category == classes_vector[i])$geometry), "\\d.\\.\\d.*(?=,)")),
+                         y = as.numeric(str_extract(as.character(filter(berlin_po_filtered, category == classes_vector[i])$geometry), "\\d*.\\d*(?=\\))"))),
+           bins = 50) +
   scale_fill_viridis_c() +
   geom_sf(data = berlin_countour, fill = "transparent", color = "black")+
   labs(title = classes_vector[i])
 }
 
-# point plots
+# plots with various categories
 plot_hex_map(1)
 plot_hex_map(2)
 plot_hex_map(3)
@@ -142,24 +143,22 @@ plot_hex_map(7)
 plot_hex_map(8)
 plot_hex_map(9)
 
-ggplot()+
-  geom_sf(data = berlin_mp_filtered)
 
-# adding Kietz names
+# plot with borough names
 ggplot()+
   geom_sf(data = berlin_countour )+
   geom_sf_text(data = berlin_countour, aes(label = name), colour = "black", size = 2.5)+
-  geom_hex(data = filter(berlin_po_filtered, category == classes_vector[1]), mapping = aes(x, y), bins = 50, alpha = 0.5)+
+  geom_hex(data = filter(berlin_po_filtered, category == classes_vector[1]),
+           mapping = aes(x = as.numeric(str_extract(as.character(filter(berlin_po_filtered, category == classes_vector[1])$geometry), "\\d.\\.\\d.*(?=,)")),
+                         y = as.numeric(str_extract(as.character(filter(berlin_po_filtered, category == classes_vector[1])$geometry), "\\d*.\\d*(?=\\))"))),
+           bins = 50, alpha = 0.5)+
   scale_fill_viridis_c()
 
-# -------------------------------------------------------------------------
-# geogrid plot for further use, will be used only for story telling -------
 
-install.packages("geogrid")
-library(geogrid)
-
-#  after testing different seeds 3 seems to be the most good looking
-newgrid <- calculate_grid(shape = berlin_countour, grid_type = "hexagonal", seed = 3)
+# PART 8
+# geogrid plot for further use, will be used only for story telling
+# after testing different seeds 2 seems to be the most good looking
+newgrid <- calculate_grid(shape = berlin_countour, grid_type = "hexagonal", seed = 2)
 resulthex <- assign_polygons(berlin_countour, newgrid)
 
 # fixing names to check how it fits
@@ -170,8 +169,7 @@ tm_shape(resulthex) +
   tm_polygons() +
   tm_text("short_name")
 
-# -------------------------------------------------------------------------
-
+# ggolot map, multipolygons are red and points are green
 ggplot() +
   geom_sf(data = berlin_countour) +
   geom_sf_text(data = berlin_countour, aes(label = name), colour = "black", size = 2.5) +
@@ -179,6 +177,7 @@ ggplot() +
   geom_sf(data = berlin_mp_filtered, color = "#cc1c3d", fill = NA) +
   geom_sf(data = berlin_po_filtered, color = "#499c54", size = 0.1)
 
+# multipolygons must be inspected whether they can be simplified to points
 # creating the centers of the multipolygons for analysis
 st_point_on_surface(berlin_mp_filtered$geometry)
 
@@ -188,33 +187,34 @@ polysize <- st_area(berlin_mp_filtered$geometry)
 
 length(polysize)
 sort(polysize, FALSE)
+# all multipolygons
 summary(sort(polysize, TRUE)[24:11828])
+# only greater than 1 hectar
 summary(polysize[as.numeric(polysize) > 100*100])
-
-test <- berlin_mp_filtered
-test$area <- as.numeric(polysize)
-# !!! keep <5 HEC as dots and look at the rest separately
+# only 58 are greater than 5 hectars
 length(polysize[as.numeric(polysize) > 100*100*5])
 
-# here you can see the biggest mps in the dataset
+
+# here you can see the biggest multipolygons in the dataset
+test <- berlin_mp_filtered
+test$area <- as.numeric(polysize)
 ggplot() +
   geom_sf(data = arrange(test, desc(area))[1:20,]) +
   geom_sf(data = berlin_countour, color = "#cc1c3d", fill = NA)
+rm(test)
 
 # simplifying down polygons to points
 berlin_mp_filtered$geometry <- st_centroid(berlin_mp_filtered$geometry)
 
-# connecting
-berlin_po_filtered$x <- NULL
-berlin_po_filtered$y <- NULL
-
+# binding the now two point dataframes
 berlin_poi <- rbind(berlin_po_filtered, berlin_mp_filtered)
-# the nice plot
+
+# the nice plot of all the points of interest by categories
 ggplot() +
   geom_sf(data = berlin_poi, size = 0.1, aes(color = category)) +
   geom_sf(data = berlin_countour, color = "#cc1c3d", fill = NA, alpha = 0.5, size = 0.5)
 
-# calculating the number of stuff in the polygons
+# calculating the number of points of interest that are contained in the polygons
 lengths(st_intersects(berlin_countour[19,], filter(berlin_poi, category == "food_and_drinks")))
 lengths(st_intersects(berlin_countour[19,], berlin_poi))
 
@@ -235,6 +235,7 @@ data.frame(name = berlin_countour$name,
           sport = lengths(st_intersects(berlin_countour, filter(berlin_poi, category == "sport"))))
 
 
+# [WORK IN PROGRESS]
 # hexplot works -- now need to work with colours
 resulthex <- arrange(resulthex, name)
 resulthex <- cbind(resulthex, counter$all)
