@@ -196,7 +196,49 @@ test$area <- as.numeric(polysize)
 # !!! keep <5 HEC as dots and look at the rest separately
 length(polysize[as.numeric(polysize) > 100*100*5])
 
+# here you can see the biggest mps in the dataset
 ggplot() +
-  geom_sf(data = filter(berlin_mp_filtered, name == "Hundeauslaufgebiet Grunewald"), color = "#cc1c3d", fill = NA)
+  geom_sf(data = arrange(test, desc(area))[1:20,]) +
+  geom_sf(data = berlin_countour, color = "#cc1c3d", fill = NA)
 
-st_cast(filter(berlin_mp_filtered, name == "Hundeauslaufgebiet Grunewald"))
+# simplifying down polygons to points
+berlin_mp_filtered$geometry <- st_centroid(berlin_mp_filtered$geometry)
+
+# connecting
+berlin_po_filtered$x <- NULL
+berlin_po_filtered$y <- NULL
+
+berlin_poi <- rbind(berlin_po_filtered, berlin_mp_filtered)
+# the nice plot
+ggplot() +
+  geom_sf(data = berlin_poi, size = 0.1, aes(color = category)) +
+  geom_sf(data = berlin_countour, color = "#cc1c3d", fill = NA, alpha = 0.5, size = 0.5)
+
+# calculating the number of stuff in the polygons
+lengths(st_intersects(berlin_countour[19,], filter(berlin_poi, category == "food_and_drinks")))
+lengths(st_intersects(berlin_countour[19,], berlin_poi))
+
+berlin_countour <- arrange(berlin_countour, name)
+
+# the category matrix
+counter <-
+data.frame(name = berlin_countour$name,
+           all = lengths(st_intersects(berlin_countour, berlin_poi)),
+          food_and_drinks = lengths(st_intersects(berlin_countour, filter(berlin_poi, category == "food_and_drinks"))),
+          shops_consumables = lengths(st_intersects(berlin_countour, filter(berlin_poi, category == "shops_consumables"))),
+          entertaining = lengths(st_intersects(berlin_countour, filter(berlin_poi, category == "entertaining"))),
+          other_shops = lengths(st_intersects(berlin_countour, filter(berlin_poi, category == "other_shops"))),
+          landmarks = lengths(st_intersects(berlin_countour, filter(berlin_poi, category == "landmarks"))),
+          kids = lengths(st_intersects(berlin_countour, filter(berlin_poi, category == "kids"))),
+          parks = lengths(st_intersects(berlin_countour, filter(berlin_poi, category == "parks"))),
+          pets = lengths(st_intersects(berlin_countour, filter(berlin_poi, category == "pets"))),
+          sport = lengths(st_intersects(berlin_countour, filter(berlin_poi, category == "sport"))))
+
+
+# hexplot works -- now need to work with colours
+resulthex <- arrange(resulthex, name)
+resulthex <- cbind(resulthex, counter$all)
+
+tm_shape(resulthex) +
+  tm_polygons(col = "counter.all", midpoint = 0, pal = c("#ff2651", "#499c54")) +
+  tm_text("short_name", col = "white")
