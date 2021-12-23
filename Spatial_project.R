@@ -235,11 +235,15 @@ data.frame(name = berlin_countour$name,
           sport = lengths(st_intersects(berlin_countour, filter(berlin_poi, category == "sport"))))
 
 
-# [WORK IN PROGRESS]
-# hexplot works -- now need to work with colours
+# Hexplot with the finalized data
 resulthex <- arrange(resulthex, name)
-resulthex <- cbind(resulthex, counter$all)
+resulthex2 <- counter %>% arrange(name) %>% select(all) %>% bind_cols(resulthex, .)
 
-tm_shape(resulthex) +
-  tm_polygons(col = "counter.all", midpoint = 0, pal = c("#ff2651", "#499c54")) +
-  tm_text("short_name", col = "white")
+tm_shape(resulthex2) +
+  tm_polygons(col = "all", midpoint = 1000, pal = c("#8db3be", "#499c54")) +
+  tm_text(text = "short_name", size = 1, col = "white", ymod = 0.25) +
+tm_shape(resulthex2) +
+  tm_text(text = "all", size = 1, col = "white", ymod = -0.25)
+
+
+# [WORK IN PROGRESS]
