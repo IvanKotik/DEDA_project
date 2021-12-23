@@ -245,5 +245,5 @@ tm_shape(resulthex2) +
 tm_shape(resulthex2) +
   tm_text(text = "all", size = 1, col = "white", ymod = -0.25)
 
-
 # [WORK IN PROGRESS]
+# NEXT UP: Assign weighting to the {counter} by borough
