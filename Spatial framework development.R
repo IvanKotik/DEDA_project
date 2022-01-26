@@ -99,8 +99,8 @@ berlin_counter <- data.frame(matrix(ncol = 0, nrow = nrow(berlin_countour)))
 berlin_counter$bezirk <- berlin_countour$name
 
 # checking the groups and assigning the count-value
+# poi multipolygon counts (parks by area, rest by intersection)
 table(a_ber_poi_multipolygon$group)
-
 berlin_counter$activities <- sapply(st_intersects(berlin_countour, filter(a_ber_poi_multipolygon, group == "activities")), length)
 berlin_counter$catering <- sapply(st_intersects(berlin_countour, filter(a_ber_poi_multipolygon, group == "catering")), length)
 berlin_counter$destinations <- sapply(st_intersects(berlin_countour, filter(a_ber_poi_multipolygon, group == "destinations")), length)
@@ -109,7 +109,10 @@ berlin_counter$health <- sapply(st_intersects(berlin_countour, filter(a_ber_poi_
 berlin_counter$kids <- sapply(st_intersects(berlin_countour, filter(a_ber_poi_multipolygon, group == "kids")), length)
 test <- data.frame(bezirk = st_intersection(filter(a_ber_poi_multipolygon, group == "park"), berlin_countour)$name.1,
                    area = st_area(st_intersection(filter(a_ber_poi_multipolygon, group == "park"), berlin_countour)))
-berlin_counter$park <- aggregate(test$area, by = list(test$bezirk), FUN = sum)
+  test2 <- aggregate(test$area, by = list(test$bezirk), FUN = sum)
+  test2 <- rename(test2, bezirk = Group.1)
+  berlin_counter <- left_join(berlin_counter, test2, by = "bezirk")
+  berlin_counter <- rename(berlin_counter, park = x)
 berlin_counter$shopping <- sapply(st_intersects(berlin_countour, filter(a_ber_poi_multipolygon, group == "shopping")), length)
 
 
@@ -123,18 +126,34 @@ berlin_counter$health <- berlin_counter$health + sapply(st_intersects(berlin_cou
 berlin_counter$kids <- berlin_counter$kids + sapply(st_intersects(berlin_countour, filter(a_ber_poi_polygon, group == "kids")), length)
 berlin_counter$shopping <- berlin_counter$shopping + sapply(st_intersects(berlin_countour, filter(a_ber_poi_polygon, group == "shopping")), length)
 
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! repeat as in line 110
+# adding up more parks from landuse polygons by intersection (done)
 table(b_ber_landuse_multipolygon$group)
-berlin_counter$park <- berlin_counter$park + sapply(st_intersects(berlin_countour, filter(b_ber_landuse_multipolygon, group == "park")), length)
-
+test <- data.frame(bezirk = st_intersection(filter(b_ber_landuse_multipolygon, group == "park"), berlin_countour)$name.1,
+                   area = st_area(st_intersection(filter(b_ber_landuse_multipolygon, group == "park"), berlin_countour)))
+  test2 <- aggregate(test$area, by = list(test$bezirk), FUN = sum)
+  test2 <- rename(test2, bezirk = Group.1)
+  berlin_counter <- left_join(berlin_counter, test2, by = "bezirk")
+  berlin_counter$park <- berlin_counter$park + berlin_counter$x
+  berlin_counter$x <- NULL
 
 # transport polygon count (done)
-table(c_ber_transport_polygon$class)
+table(c_ber_transport_polygon$group)
 berlin_counter$transport <- sapply(st_intersects(berlin_countour, filter(c_ber_transport_polygon, group == "transport")), length)
 
 table(d_ber_water_multipolygons$group)
-berlin_counter$water <- sapply(st_intersects(berlin_countour, filter(d_ber_water_multipolygons, group == "water")), length)
+test <- data.frame(bezirk = st_intersection(d_ber_water_multipolygons, berlin_countour)$name.1,
+                   area = st_area(st_intersection(d_ber_water_multipolygons, berlin_countour)))
+test2 <- aggregate(test$area, by = list(test$bezirk), FUN = sum)
+test2 <- rename(test2, bezirk = Group.1)
+berlin_counter <- left_join(berlin_counter, test2, by = "bezirk")
+berlin_counter <- rename(berlin_counter, water = x)
+head(berlin_counter)
+rm(test)
+rm(test2)
+# counter done
+
+# combining the one file
+x_berlin <- left_join(rename(berlin_countour, bezirk = name), berlin_counter, by = "bezirk")
 
 
 # plots [in progress]
@@ -152,4 +171,195 @@ ggplot()+
   geom_sf(data = berlin_countour)+
   geom_sf(data = c_ber_transport_polygon, aes(color = fclass), size = 0.5)
 
+# getting palettes
+install.packages("devtools")
+devtools::install_github("jaredhuling/jcolors")
+library(jcolors)
+display_all_jcolors_contin()
 
+# entertainment plot
+ggplot(data = x_berlin)+
+  geom_sf(aes(fill = entertainment))+
+  scale_fill_jcolors_contin("pal11")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("entertainment.png", dpi = 320, scale = 1)
+
+# activities plot
+ggplot(data = x_berlin)+
+  geom_sf(aes(fill = activities))+
+  scale_fill_jcolors_contin("pal11")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("activities.png", dpi = 320, scale = 1)
+
+# catering plot
+ggplot(data = x_berlin)+
+  geom_sf(aes(fill = catering))+
+  scale_fill_jcolors_contin("pal11")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("catering.png", dpi = 320, scale = 1)
+
+# destinations plot
+ggplot(data = x_berlin)+
+  geom_sf(aes(fill = destinations))+
+  scale_fill_jcolors_contin("pal11")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("destinations.png", dpi = 320, scale = 1)
+
+# health plot
+ggplot(data = x_berlin)+
+  geom_sf(aes(fill = health))+
+  scale_fill_jcolors_contin("pal11")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("health.png", dpi = 320, scale = 1)
+
+# kids plot
+ggplot(data = x_berlin)+
+  geom_sf(aes(fill = kids))+
+  scale_fill_jcolors_contin("pal11")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("kids.png", dpi = 320, scale = 1)
+
+# park plot
+xx_berlin <- x_berlin
+xx_berlin$park <- as.integer(xx_berlin$park/(100*100))
+options(scipen=999)
+ggplot(data = xx_berlin)+
+  geom_sf(aes(fill = park))+
+  scale_fill_jcolors_contin(palette = "pal11")+
+  labs(fill = "Parks, hec.")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("parks.png", dpi = 320, scale = 1)
+
+# transport plot
+ggplot(data = x_berlin)+
+  geom_sf(aes(fill = transport))+
+  labs(fill = "transportation")+
+  scale_fill_jcolors_contin("pal11")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("transport.png", dpi = 320, scale = 1)
+
+# water plot
+xx_berlin$water <- as.integer(xx_berlin$water/(100*100))
+ggplot(data = xx_berlin)+
+  geom_sf(aes(fill = water))+
+  scale_fill_jcolors_contin(palette = "pal11")+
+  labs(fill = "water, hec.")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("water.png", dpi = 320, scale = 1)
