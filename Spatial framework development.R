@@ -175,6 +175,7 @@ ggplot()+
 install.packages("devtools")
 devtools::install_github("jaredhuling/jcolors")
 library(jcolors)
+display_all_jcolors()
 display_all_jcolors_contin()
 
 # entertainment plot
@@ -363,3 +364,76 @@ ggplot(data = xx_berlin)+
   )
   }
 ggsave("water.png", dpi = 320, scale = 1)
+rm(xx_berlin)
+
+# combining the distance files
+x_distance_polygon <- bind_rows(a_ber_poi_polygon, c_ber_transport_polygon)
+x_distance_multipolygon <- bind_rows(a_ber_poi_multipolygon, b_ber_landuse_multipolygon, d_ber_water_multipolygons)
+
+x_distance_polygon[1, 5]
+st_distance(x_distance_polygon, x_distance_polygon[1, 5])
+
+# all dots plot
+ggplot()+
+  geom_sf(data = x_berlin, fill = NA)+
+  geom_sf(data = x_distance_polygon, aes(color = group), size = 0.4, alpha = 0.85)+
+  scale_color_jcolors("pal8")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("alldots.png", dpi = 320, scale = 1)
+
+# poi poly plot
+ggplot()+
+  geom_sf(data = x_berlin)+
+  geom_sf(data = a_ber_poi_multipolygon, aes(fill = group))+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("poipolyplot.png", dpi = 320, scale = 1)
+
+# forest and water plot
+ggplot()+
+  geom_sf(data = x_berlin)+
+  geom_sf(data = b_ber_landuse_multipolygon, fill = "lightgreen")+
+  geom_sf(data = d_ber_water_multipolygons, fill = "lightblue")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("waterforestplot.png", dpi = 320, scale = 1)
+
+ggplot()+
+  geom_sf(data = x_distance_multipolygon)
