@@ -6,6 +6,14 @@ Spatial analysis of Berlin rent prices
 A project to try to regress prices on rent in Berlin with the inclusion of a spatial discount factor as well as a subjective consumer preference discount index.
 
 Input spatial dataset consists of spatial data on various objects including(in order) physical activities, entertainment, catering, transportation nodes, parks(in hectars), water(also in hectars), kids infrastructure, health object(pharmacies etc.), destinations(sightseeing, museum, objects of historical importance).
+All polygons:
+![alldots](https://user-images.githubusercontent.com/92677707/151255667-88a93c13-d0e8-46c8-9bee-f0526ea4762f.png)
+All points of interest multipolygons:
+![poipolyplot](https://user-images.githubusercontent.com/92677707/151255733-09be3a7e-bea3-4110-aea7-a6b67d6bda27.png)
+Parks and water objects:
+![waterforestplot](https://user-images.githubusercontent.com/92677707/151255766-9a775048-2895-4a47-8d0f-770ca8ef49a2.png)
+
+Cumulative description:
 ![activities](https://user-images.githubusercontent.com/92677707/151195875-4cfa911d-0523-4981-b441-eabbd495019d.png)
 ![entertainment](https://user-images.githubusercontent.com/92677707/151195877-4b837294-3c45-4c6b-881c-d75adae25132.png)
 ![catering](https://user-images.githubusercontent.com/92677707/151195873-53ec210e-b107-4ca8-97d8-0dd6f4900cf6.png)
