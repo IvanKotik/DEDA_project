@@ -83,3 +83,113 @@ ggplot(data_berlin[data_berlin[, "totalRent"]<5000, ], aes(x = livingSpace, y = 
   geom_smooth(se = FALSE, method = lm, size = 0.7)  # based on the graps it can be seen that there is no heavy difference between the types
 ggsave("heatingtypewithlines.png", dpi = 320, scale = 1)
 
+# making the model
+# checking differences in the behavior of the various rent parameters
+ggplot()+
+  geom_density(data = data_berlin, aes(x = data_berlin$serviceCharge))
+ggplot()+
+  geom_density(data = data_berlin, aes(x = data_berlin$baseRent))
+ggplot()+
+  geom_density(data = data_berlin, aes(x = data_berlin$totalRent))
+
+# model without house parameters
+model <- lm(totalRent ~ livingSpace + noRooms + hasKitchen + extrawc + balcony + geschirrsp + washingm + garden + cellar + lift + floor + yearConstructed, data_berlin)
+plot(model)
+# from the diagnostic plots we can see that:
+# 1. RvsL: observation nr.183, 7130, 8626 are externalities and should be excluded
+# 2. S-L: 183, 7130, 7909 are externalities, data has some heteroscedasticity present
+# 3. Q-Q: 183, 7130, 7909 are externalities, data is not normal on the tails
+# 4. RvsF: 2169, 7130, 7909 are externalities, data is almost linear
+# deleting these observations
+data_berlin <- data_berlin[-c(183, 2169, 7130, 7909),]
+
+# remodelling
+model <- lm(totalRent ~ livingSpace + noRooms + hasKitchen + extrawc + balcony + geschirrsp + washingm + garden + cellar + lift + floor + yearConstructed, data_berlin)
+plot(model)
+data_berlin <- data_berlin[-c(8622, 6265, 9313),]
+model <- lm(totalRent ~ livingSpace + noRooms + hasKitchen + extrawc + balcony + geschirrsp + washingm + garden + cellar + lift + floor + yearConstructed, data_berlin)
+plot(model)
+data_berlin <- data_berlin[-c(8753, 7369, 8513),]
+model <- lm(totalRent ~ livingSpace + noRooms + hasKitchen + extrawc + balcony + geschirrsp + washingm + garden + cellar + lift + floor + yearConstructed, data_berlin)
+plot(model)
+data_berlin <- data_berlin[-c(3562, 4987, 9013),]
+model <- lm(totalRent ~ livingSpace + noRooms + hasKitchen + extrawc + balcony + geschirrsp + washingm + garden + cellar + lift + floor + yearConstructed, data_berlin)
+plot(model)
+
+# trying out a Breusch-Pagan test to check for homoscedasticity
+library(lmtest)
+options(scipen=999)
+bptest(model)  # p-value < 0.00000000000000022, heteroscedasticity present
+summary(model)
+
+# looking for parameters to exclude
+summary(lm(totalRent ~ livingSpace + noRooms + hasKitchen + extrawc + balcony + washingm + lift + yearConstructed, data_berlin))
+summary(lm(totalRent ~ livingSpace + noRooms + hasKitchen + balcony + lift + yearConstructed, data_berlin))
+model2 <- lm(totalRent ~ livingSpace + noRooms + hasKitchen + balcony + lift + yearConstructed, data_berlin)
+
+# calibrated model with only impactful parameters left
+plot(model2)
+data_berlin <- data_berlin[-c(6612, 6046, 9497),]
+model2 <- lm(totalRent ~ livingSpace + noRooms + hasKitchen + balcony + lift + yearConstructed, data_berlin)
+summary(model2)
+
+# change NA's to 0 and calculate the prices for all apartments
+data_berlin$baseRent <- replace_na(data_berlin$baseRent, 0)
+data_berlin$serviceCharge <- replace_na(data_berlin$serviceCharge, 0)
+data_berlin$heatingCosts <- replace_na(data_berlin$heatingCosts, 0)
+data_berlin$price <- data_berlin$baseRent + data_berlin$serviceCharge + data_berlin$heatingCosts
+data_berlin <- relocate(data_berlin, price, .after = houseNumber)
+
+sum(is.na(data_berlin$yearConstructed))  # among all parameters except yearsConstructed there are none NA's, there is no reason to replace NA with anything so we jsut delete the NA rows
+data_berlin %>% filter(yearConstructed != "NA") -> data_berlin_final
+
+
+model3 <- lm(price ~ livingSpace + noRooms + hasKitchen + balcony + lift, data_berlin_final)
+summary(model3)
+plot(model3)
+
+plot(sort(abs(model3$residuals / model3$fitted.values)))
+sort(abs(model3$residuals / model3$fitted.values))
+data_berlin_final <- data_berlin_final[-c(7560, 6172, 3933, 1587, 8837, 467, 2911, 3760, 7693, 4727, 6511, 4171, 614, 4548, 2812, 3562, 5018),]
+
+weight <- 1/(model3$fitted.values - data_berlin_final$price)^2
+plot(lm(price ~ livingSpace + noRooms + hasKitchen + balcony + lift, data_berlin_final, weights = weight))
+summary(lm(price ~ livingSpace + noRooms + hasKitchen + balcony + lift, data_berlin_final, weights = weight))
+model4 <- lm(price ~ livingSpace + noRooms + hasKitchen + balcony + lift, data_berlin_final, weights = weight)
+# this model looses all of its normality which I don't like
+rm(model4)
+rm(wt)
+rm(wls_model)
+rm(model2)
+rm(model)
+
+
+plot(model3)
+summary(model3)
+
+data_berlin_final$fitted <- model3$fitted.values
+
+ggplot(data_berlin_final)+
+  geom_point(aes(x = livingSpace, y = price, color = "current rent prices"), size = 0.4)+
+  geom_point(aes(x = livingSpace, y = fitted, color = "fitted values"), alpha = 0.5, size = 0.4)+
+  geom_smooth(aes(x = livingSpace, y = fitted, color = "model"), method = "lm", alpha = 0.5)+
+  scale_color_manual(values = c("#000000", "#fedb1b", "#fd8585"))
+ggsave("modelingtheprices.png", dpi = 320, scale = 1)
+
+predict.lm(model3, data.frame(livingSpace = 75, noRooms = 2, hasKitchen = TRUE, balcony = TRUE, lift = FALSE))
+predict.lm(model3, data.frame(livingSpace = 80, noRooms = 3, hasKitchen = TRUE, balcony = TRUE, lift = FALSE))
+predict.lm(model3, data.frame(livingSpace = 60, noRooms = 2, hasKitchen = TRUE, balcony = TRUE, lift = FALSE))
+
+# calibrating
+summary(model3)
+ggplot(data_berlin_final, aes(y = price, fill = factor(noRooms)))+
+  geom_boxplot()
+ggplot(data_berlin_final, aes(y = price, fill = factor(balcony)))+
+  geom_boxplot()
+
+data_berlin_final %>% select(price, livingSpace, noRooms, hasKitchen, balcony, lift) %>% plot
+data_berlin_final %>% select(livingSpace, noRooms, hasKitchen, balcony, lift) %>% cor
+
+model_x <- lm(data = data_berlin_final, formula = price ~ livingSpace + noRooms + hasKitchen + extrawc + balcony + typeOfFlat + garden + cellar + yearConstructed + newlyConst + floor + numberOfFloors + lift)
+summary(model_x)
+plot(model_x)
