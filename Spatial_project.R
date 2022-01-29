@@ -237,13 +237,16 @@ data.frame(name = berlin_countour$name,
 
 # Hexplot with the finalized data
 resulthex <- arrange(resulthex, name)
+resulthex2 <- berlin_countour %>% arrange(name) %>% select(short_name) %>% bind_cols(resulthex, .)
 resulthex2 <- counter %>% arrange(name) %>% select(all) %>% bind_cols(resulthex, .)
 
 tm_shape(resulthex2) +
   tm_polygons(col = "all", midpoint = 1000, pal = c("#8db3be", "#499c54")) +
-  tm_text(text = "short_name", size = 1, col = "white", ymod = 0.25) +
-tm_shape(resulthex2) +
+  tm_text(text = "short_name", size = 1, col = "white", ymod = 0.25)
+  tm_shape(resulthex2) +
   tm_text(text = "all", size = 1, col = "white", ymod = -0.25)
 
 # [WORK IN PROGRESS]
 # NEXT UP: Assign weighting to the {counter} by borough
+
+berlin_test <- read_sf(dsn = "C://Users//ivkot//Downloads//berlin-latest-free.shp//gis_osm_pois_a_free_1.shp")
