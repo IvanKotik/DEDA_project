@@ -75,12 +75,40 @@ data_berlin$washingm <- as.logical(replace_na(data_berlin$washingm, 0))
 
 # Checking whether heatingTypes have a influence on the price
 ggplot(data_berlin[data_berlin[, "totalRent"]<5000, ], aes(x = livingSpace, y = totalRent, color = heatingType))+
-  geom_point()
+  geom_point()+
+  {theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
 ggsave("heatingtypewithoutlines.png", dpi = 320, scale = 1)
 
 ggplot(data_berlin[data_berlin[, "totalRent"]<5000, ], aes(x = livingSpace, y = totalRent, color = heatingType))+
   geom_point(size = 0.75, alpha = 0.2)+
-  geom_smooth(se = FALSE, method = lm, size = 0.7)  # based on the graps it can be seen that there is no heavy difference between the types
+  geom_smooth(se = FALSE, method = lm, size = 0.7)+
+  {theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }  # based on the graps it can be seen that there is no heavy difference between the types
 ggsave("heatingtypewithlines.png", dpi = 320, scale = 1)
 
 # making the model
@@ -173,7 +201,21 @@ ggplot(data_berlin_final)+
   geom_point(aes(x = livingSpace, y = price, color = "current rent prices"), size = 0.4)+
   geom_point(aes(x = livingSpace, y = fitted, color = "fitted values"), alpha = 0.5, size = 0.4)+
   geom_smooth(aes(x = livingSpace, y = fitted, color = "model"), method = "lm", alpha = 0.5)+
-  scale_color_manual(values = c("#000000", "#fedb1b", "#fd8585"))
+  scale_color_manual(values = c("#ffffff", "#fedb1b", "#cf0303"))+
+  {theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
 ggsave("modelingtheprices.png", dpi = 320, scale = 1)
 
 predict.lm(model3, data.frame(livingSpace = 75, noRooms = 2, hasKitchen = TRUE, balcony = TRUE, lift = FALSE))
@@ -190,6 +232,16 @@ ggplot(data_berlin_final, aes(y = price, fill = factor(balcony)))+
 data_berlin_final %>% select(price, livingSpace, noRooms, hasKitchen, balcony, lift) %>% plot
 data_berlin_final %>% select(livingSpace, noRooms, hasKitchen, balcony, lift) %>% cor
 
-model_x <- lm(data = data_berlin_final, formula = price ~ livingSpace + noRooms + hasKitchen + extrawc + balcony + typeOfFlat + garden + cellar + yearConstructed + newlyConst + floor + numberOfFloors + lift)
+model_x <- lm(data = data_berlin, formula = price ~ livingSpace + noRooms + hasKitchen + extrawc + balcony + typeOfFlat + garden + cellar + yearConstructed + newlyConst + floor + numberOfFloors + lift)
 summary(model_x)
 plot(model_x)
+
+
+# Converting adresses to coordinates
+paste(data_berlin$regio1[5], data_berlin$geo_plz[5], data_berlin$streetPlain[5], data_berlin$houseNumber[5])
+data_berlin$full_adress <- paste(data_berlin$regio1, data_berlin$geo_plz, data_berlin$streetPlain, data_berlin$houseNumber)
+data_berlin <- relocate(data_berlin, full_adress, .before = regio1)
+
+sum(str_detect(data_berlin$full_adress, "NA"))
+data_berlin[10369, 1]
+data_berlin$full_adress
