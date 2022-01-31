@@ -1,11 +1,17 @@
 # installing the libraries
 library(sf)
 library(data.table)
+install.packages("tidyverse")
 library(tidyverse)
+install.packages("maptiles")
 library(maptiles)
+install.packages("cartography")
 library(cartography)
+install.packages("geogrid")
 library(geogrid)
+install.packages("tmap")
 library(tmap)
+install.packages("geogrid")
 library(geogrid)
 
 # loading all the shape files
@@ -13,21 +19,33 @@ list.files("C://Users//ivkot//Downloads//shape_files")
 
 # the points of interest multipolygons
 a_ber_poi_multipolygon <- read_sf(dsn = "C://Users//ivkot//Downloads//shape_files//gis_osm_pois_a_free_1.shp")
+# for mac
+a_ber_poi_multipolygon <- read_sf(dsn = "/Users/ivankotik/Documents/shape_files/gis_osm_pois_a_free_1.shp")
 
 # the points of interest polygons
 a_ber_poi_polygon <- read_sf(dsn = "C://Users//ivkot//Downloads//shape_files//gis_osm_pois_free_1.shp")
+# for mac
+a_ber_poi_polygon <- read_sf(dsn = "/Users/ivankotik/Documents/shape_files/gis_osm_pois_free_1.shp")
 
 # the landuse(parks) polygons
 b_ber_landuse_multipolygon <- read_sf(dsn = "C://Users//ivkot//Downloads//shape_files//gis_osm_landuse_a_free_1.shp")
+# for mac
+b_ber_landuse_multipolygon <- read_sf(dsn = "/Users/ivankotik/Documents/shape_files/gis_osm_landuse_a_free_1.shp")
 
 # the transport polygons
 c_ber_transport_polygon <- read_sf(dsn = "C://Users//ivkot//Downloads//shape_files//gis_osm_transport_free_1.shp")
+# for mac
+c_ber_transport_polygon <- read_sf(dsn = "/Users/ivankotik/Documents/shape_files/gis_osm_transport_free_1.shp")
 
 # the water objects multipolygons
 d_ber_water_multipolygons <- read_sf(dsn = "C://Users//ivkot//Downloads//shape_files//gis_osm_water_a_free_1.shp")
+# for mac
+d_ber_water_multipolygons <- read_sf(dsn = "/Users/ivankotik/Documents/shape_files/gis_osm_water_a_free_1.shp")
 
 # the Berlin city map
 e_ber_map <- read_sf(dsn = "C://Users//ivkot//Downloads//shape_files//gis_osm_places_a_free_1.shp")
+# for mac
+e_ber_map <- read_sf(dsn = "/Users/ivankotik/Documents/shape_files/gis_osm_places_a_free_1.shp")
 berlin_countour <- filter(e_ber_map, fclass == "suburb")
 berlin_countour <- berlin_countour[, 5:6]
 berlin_countour <- arrange(berlin_countour, name)
@@ -140,6 +158,7 @@ test <- data.frame(bezirk = st_intersection(filter(b_ber_landuse_multipolygon, g
 table(c_ber_transport_polygon$group)
 berlin_counter$transport <- sapply(st_intersects(berlin_countour, filter(c_ber_transport_polygon, group == "transport")), length)
 
+# water multipolygon count (done)
 table(d_ber_water_multipolygons$group)
 test <- data.frame(bezirk = st_intersection(d_ber_water_multipolygons, berlin_countour)$name.1,
                    area = st_area(st_intersection(d_ber_water_multipolygons, berlin_countour)))
@@ -160,16 +179,64 @@ x_berlin <- left_join(rename(berlin_countour, bezirk = name), berlin_counter, by
 ggplot()+
   geom_sf(data = berlin_countour)+
   geom_sf(data = a_ber_poi_multipolygon[13354, 5], color = "red")+
-  geom_sf(data = a_ber_poi_polygon[1,5], color = "blue")
+  geom_sf(data = a_ber_poi_polygon[1,5], color = "blue")+
+  {theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("temporary.png", dpi = 320, scale = 1)
+
+
+ggplot()+
+  geom_sf(data = berlin_countour, color = "white", fill = "grey", alpha = 0.5)+
+  geom_sf(data = d_ber_water_multipolygons, color = "blue", fill = "lightblue", alpha = 0.5)+
+  geom_sf(data = b_ber_landuse_multipolygon, color = "green", fill = "lightgreen", alpha = 0.5)+
+  {theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("temporary2.png", dpi = 320, scale = 1)
+
 
 ggplot()+
   geom_sf(data = berlin_countour)+
-  geom_sf(data = d_ber_water_multipolygons, color = "lightblue", fill = "lightblue", alpha = 0.5)+
-  geom_sf(data = b_ber_landuse_multipolygon, color = "lightgreen", fill = "lightgreen", alpha = 0.5)
+  geom_sf(data = c_ber_transport_polygon, aes(color = fclass), size = 0.5)+
+  {theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+  ggsave("temporary3.png", dpi = 320, scale = 1)
 
-ggplot()+
-  geom_sf(data = berlin_countour)+
-  geom_sf(data = c_ber_transport_polygon, aes(color = fclass), size = 0.5)
 
 # getting palettes
 install.packages("devtools")
