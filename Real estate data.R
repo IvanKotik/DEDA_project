@@ -2,7 +2,9 @@ library(tidyverse)
 
 # Data taken from: https://www.kaggle.com/corrieaar/apartment-rental-offers-in-germany/version/6
 # Importing data
-data <-   read_csv("C://Users//ivkot//Downloads//archive//immo_data.csv")
+data <- read_csv("C://Users//ivkot//Downloads//archive//immo_data.csv")
+# for mac
+data <- read.csv("/Users/ivankotik/Documents/shape_files/immo_data.csv")
 
 # Checking for berlin
 table(data$regio1)
