@@ -247,3 +247,43 @@ data_berlin <- relocate(data_berlin, full_adress, .before = regio1)
 sum(str_detect(data_berlin$full_adress, "NA"))
 data_berlin[10369, 1]
 data_berlin$full_adress
+
+# Fixing the model
+# The initial last model
+model3 <- lm(price ~ livingSpace + noRooms + hasKitchen + balcony + lift, data_berlin_final)
+summary(model3)
+plot(model3)
+
+ggplot(data = data_berlin_final, aes(x = livingSpace, y = price))+
+  geom_point()
+
+# inspecting how the price data distribution looks like
+ggplot(data = data_berlin_final, aes(x = price))+
+  geom_density()
+
+# deleting the tail
+summary(data_berlin_final$price)
+quantile(data_berlin_final$price, 0.90)
+quantile(data_berlin_final$price, 0.80)
+data_berlin_final %>% filter(price <= 2500) -> data_berlin_filtered
+data_berlin_final %>% filter(price <= 2000) -> data_berlin_filtered
+data_berlin_filtered <- data_berlin_filtered[-c(5882, 4690, 922), ]
+data_berlin_filtered <- data_berlin_filtered[-c(5882, 419, 6074, 4150), ]
+data_berlin_filtered <- data_berlin_filtered[-5832, ]
+# recalibrating the model
+model3_filter <- lm(price ~ livingSpace + noRooms + hasKitchen + balcony + lift, data_berlin_filtered)
+summary(model3_filter)
+# deleting noRooms
+model3_filter <- lm(price ~ livingSpace + hasKitchen + balcony + lift, data_berlin_filtered)
+summary(model3_filter)
+plot(model3_filter)
+
+ggplot(data = data_berlin_filtered, aes(x = livingSpace, y = price))+
+  geom_point()
+ggplot(data = data_berlin_filtered, aes(x = price))+
+  geom_density()
+
+install.packages("ggfortify")
+library(ggfortify)
+autoplot(lm(price ~ livingSpace + hasKitchen + balcony + lift, data_berlin_filtered), label.size = 3)
+data_berlin_filtered$fitted <- NULL

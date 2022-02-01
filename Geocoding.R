@@ -1,4 +1,4 @@
-i# install packages
+# install packages
 install.packages("ggmap")
 install.packages("tmaptools")
 install.packages("RCurl")
