@@ -1,6 +1,6 @@
 # installing the libraries
+install.packages("sf")
 library(sf)
-library(data.table)
 install.packages("tidyverse")
 library(tidyverse)
 install.packages("maptiles")
@@ -505,6 +505,9 @@ ggsave("waterforestplot.png", dpi = 320, scale = 1)
 ggplot()+
   geom_sf(data = x_distance_multipolygon)
 
-write.csv(x_berlin, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/x_berlin.csv")
-write.csv(x_distance_multipolygon, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/x_distance_multipolygon.csv")
-write.csv(x_distance_polygon, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/x_distance_polygon.csv")
+write.csv2(x_berlin, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/x_berlin.csv")
+write.table(x_berlin, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/x_berlin.csv", sep = "|")
+write.csv2(x_distance_multipolygon, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/x_distance_multipolygon.csv")
+write.table(x_distance_multipolygon, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/x_distance_multipolygon.csv", sep = "|")
+write.csv2(x_distance_polygon, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/x_distance_polygon.csv")
+write.table(x_distance_polygon, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/x_distance_polygon.csv", sep = "|")
