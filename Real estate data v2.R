@@ -150,7 +150,9 @@ ggsave("heatingtypewithlines.png", dpi = 320, scale = 1)
 data_berlin$price <- data_berlin$baseRent + data_berlin$serviceCharge + data_berlin$heatingCosts
 data_berlin <- relocate(data_berlin, price, .after = houseNumber)
 data_berlin_model <- data_berlin[, c(7, 12:29)]
+data_berlin_model_backup <- data_berlin[, c(1:7, 12:29)]
 data_berlin_model %>% filter(is.na(price) == FALSE) -> data_berlin_model
+data_berlin_model_backup %>% filter(is.na(price) == FALSE) -> data_berlin_model_backup
 
 # Including everyting
 summary(lm(price ~ ., data = data_berlin_model))
@@ -166,6 +168,7 @@ ggplot(data_berlin_model, aes(x = price))+
   geom_density()
 quantile(data_berlin_model$price, 0.9)  # cutoff at 2400
 data_berlin_model %>% filter(price <= 2400) -> data_berlin_model_filter
+data_berlin_model %>% filter(price <= 2400) -> data_berlin_model_backup
 
 # modelling
 model_2_2 <- lm(price ~ livingSpace + hasKitchen + floor + numberOfFloors + lift, data = data_berlin_model_filter)
@@ -181,7 +184,11 @@ summary(model_2_3)  # deleting floors due to insignificance
 autoplot(model_2_3)
 
 data_berlin_model_filter$model2_2 <- model_2_2$fitted.values
+data_berlin_model_backup$model2_2 <- model_2_2$fitted.values
 data_berlin_model_filter$model2_3 <- model_2_3$fitted.values
+data_berlin_model_backup$model2_3 <- model_2_3$fitted.values
 
 ggplot(data = data_berlin_model_filter)+
   geom_point(aes(x = livingSpace, y = price, color = lift))
+write.csv(data_berlin_model_backup,
+          file = "/Users/ivankotik/Documents/DEDA_project/miscellaneous/data after modelling.csv")
