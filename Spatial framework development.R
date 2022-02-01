@@ -504,3 +504,7 @@ ggsave("waterforestplot.png", dpi = 320, scale = 1)
 
 ggplot()+
   geom_sf(data = x_distance_multipolygon)
+
+write.csv(x_berlin, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/x_berlin.csv")
+write.csv(x_distance_multipolygon, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/x_distance_multipolygon.csv")
+write.csv(x_distance_polygon, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/x_distance_polygon.csv")
