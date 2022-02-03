@@ -8,7 +8,7 @@ library(tidyverse)
 model <- read.csv("/Users/ivankotik/Documents/DEDA_project/miscellaneous/data after modelling.csv")
 geocoding <- read.csv("/Users/ivankotik/Documents/DEDA_project/miscellaneous/coordinates_osm_v2.csv")
 
-# Getting the shapefiles
+# Getting the shapefiles from previous files
 {
 # for mac
 a_ber_poi_multipolygon <- read_sf(dsn = "/Users/ivankotik/Documents/shape_files/gis_osm_pois_a_free_1.shp")
@@ -156,4 +156,12 @@ rm(x_distance_multipolygon)
 polygon <- x_distance_polygon
 rm(x_distance_polygon)
 }
+
+# Deleting an empty row
+geocoding <- geocoding[-1, ]
+# Get the full adress
+model$fulladress <- paste(model$regio1, model$geo_plz, model$streetPlain, model$houseNumber)
+apartments <- left_join(model, geocoding, by = c("fulladress" = "query"))
+apartments2 <- apartments[!duplicated(apartments$fulladress), ]
+apartments3 <- apartments[duplicated(apartments$fulladress), ]
 

@@ -149,8 +149,8 @@ ggsave("heatingtypewithlines.png", dpi = 320, scale = 1)
 # Calculating price
 data_berlin$price <- data_berlin$baseRent + data_berlin$serviceCharge + data_berlin$heatingCosts
 data_berlin <- relocate(data_berlin, price, .after = houseNumber)
-data_berlin_model <- data_berlin[, c(7, 12:29)]
-data_berlin_model_withnames <- data_berlin[, c(1:7, 12:29)]
+data_berlin_model <- data_berlin[, c(7, 12:30)]
+data_berlin_model_withnames <- data_berlin[, c(1:7, 12:30)]
 data_berlin_model %>% filter(is.na(price) == FALSE) -> data_berlin_model
 data_berlin_model_withnames %>% filter(is.na(price) == FALSE) -> data_berlin_model_withnames
 
@@ -190,4 +190,4 @@ data_berlin_model_withnames$model2_3 <- model_2_3$fitted.values
 
 ggplot(data = data_berlin_model_filter)+
   geom_point(aes(x = livingSpace, y = price, color = lift))
-write.csv(data_berlin_model_withnames, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/coordinates_osm_v2.csv")
+write.csv(data_berlin_model_withnames, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/data after modelling.csv")
