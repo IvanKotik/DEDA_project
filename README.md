@@ -1,5 +1,4 @@
-# DEDA_project
-Spatial analysis of Berlin rent prices
+# Spatial analysis of Berlin rent prices
 
 [WORK IN PROGRESS]
 
