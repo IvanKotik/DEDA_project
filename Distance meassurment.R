@@ -165,4 +165,4 @@ apartments <- left_join(model, geocoding, by = c("fulladress" = "query"))
 apartments2 <- apartments[!duplicated(apartments$fulladress), ]
 apartments3 <- apartments[duplicated(apartments$fulladress), ]
 
-123
+test
