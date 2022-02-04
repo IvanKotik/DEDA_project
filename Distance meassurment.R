@@ -263,12 +263,12 @@ st_distance(apartments_clean_points[1, ], polygon[1, ])  # units are m
 
 # TESTING:
 apartments_clean_points[1:2, ] %>% st_distance((polygon %>% filter(group == "catering"))) %>%
-  sub(pattern = 0, replacement = 10) %>% as.numeric() %>% `^`(-1) %>% apply(MARGIN = 1, sum)
-
-
-apartments_clean_points %>% st_distance((polygon %>% filter(group == "catering"))) %>%
   sub(pattern = 0, replacement = 10) %>% as.numeric() %>% `^`(-1)
 
-apply(MARGIN = 1, sum)
-apartments_clean_points$dist_catering
+# need to change 0's to 10's
+library(units)
+apartments_clean_points[13:15, ] %>% st_distance((polygon %>% filter(group == "catering"))) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum)
 
+############# WORKS
+apartments_clean_points[13:15, ] %>% st_distance((polygon %>% filter(group == "catering"))) %>%
+  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum)
