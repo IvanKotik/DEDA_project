@@ -161,8 +161,96 @@ rm(x_distance_polygon)
 geocoding <- geocoding[-1, ]
 # Get the full adress
 model$fulladress <- paste(model$regio1, model$geo_plz, model$streetPlain, model$houseNumber)
-apartments <- left_join(model, geocoding, by = c("fulladress" = "query"))
-apartments2 <- apartments[!duplicated(apartments$fulladress), ]
-apartments3 <- apartments[duplicated(apartments$fulladress), ]
 
-test
+# Checking dimention compatability
+length(model$fulladress)
+length(geocoding$query)
+
+# Checking matches
+match(model$fulladress, geocoding$query)
+geocoding <- rename(geocoding, "fulladress" = "query")
+
+# Deleting a useless column
+model$X <- NULL
+
+# Joining the tables
+left_join(model, geocoding, by = "fulladress") -> apartments
+distinct(apartments) -> apartments
+
+# Checking empty coordinates
+length(apartments[(is.na(apartments[, 32])), 29])
+# Leaving only correct coordinates
+apartments[is.na(apartments[, 32]) == FALSE, ] -> apartments_clean
+
+# Creating the SF object
+st_as_sf(apartments_clean, coords = c("lat","lon")) -> apartments_clean_points
+berlin  # the CRS in use is WGS 84
+st_as_sf(apartments_clean, coords = c("lon", "lat"), crs = "WGS84") -> apartments_clean_points
+
+# Plotting the solutions
+{
+ggplot()+
+  geom_sf(data = (multipolygon %>% filter(group == "park")), color = "green", fill = "lightgreen", alpha = 0.2)+
+  geom_sf(data = apartments_clean_points, color = "gold", size = 0.25)
+ggplot()+
+  geom_sf(data = (multipolygon %>% filter(group == "water")), color = "blue", fill = "lightblue", alpha = 0.2)+
+  geom_sf(data = apartments_clean_points, color = "gold", size = 0.25)
+
+ggplot()+
+  geom_sf(data = berlin, fill = "NA", color = "white", alpha = 1)+
+  geom_sf(data = (multipolygon %>% filter(group == "park")), color = "green", fill = "lightgreen", alpha = 0.2)+
+  geom_sf(data = (multipolygon %>% filter(group == "water")), color = "blue", fill = "lightblue", alpha = 0.2)+
+  geom_sf(data = apartments_clean_points, color = "gold", size = 0.25)+
+  {theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("apartments.png", dpi = 320, scale = 1)
+
+ggplot()+
+  geom_sf(data = berlin, fill = "NA", color = "white", alpha = 1)+
+  geom_sf(data = multipolygon, aes(color = group, fill = group), alpha = 0.5)+
+  geom_sf(data = polygon, aes(color = group), size = 0.2, alpha = 0.5)+
+  geom_sf(data = apartments_clean_points, color = "gold", size = 0.25)+
+  {theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("apartments3.png", dpi = 320, scale = 1)
+}
+
+# Meassuring distance
+rm(apartments_clean)
+rm(apartments)
+
+# Getting rid of scientific notation
+options(scipen=999)
+
+# The distance calculation
+apartments_clean_points %>% slice(1:2) %>% st_distance((polygon %>% filter(group == "catering"))) %>% `^`(-1) %>% sum
+apartments_clean_points %>% apply(MARGIN = 1, FUN = st_distance((polygon %>% filter(group == "catering")))) %>% `^`(-1) %>% sum
+apply(apartments_clean_points, MARGIN = 1, FUN = st_distance((polygon %>% filter(group == "catering"))))
+map(.x = apartments_clean_points[1:2, ], .f = as.integer(st_distance((polygon %>% filter(group == "catering")))))
+
+apartments_clean_points %>% slice(1:2) %>% st_distance((polygon %>% filter(group == "catering"))) %>% `^`(-1) %>% sum
+sapply(apartments_clean_points, FUN = st_distance((polygon %>% filter(group == "catering"))))
