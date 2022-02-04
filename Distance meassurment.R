@@ -247,10 +247,21 @@ rm(apartments)
 options(scipen=999)
 
 # The distance calculation
-apartments_clean_points %>% slice(1:2) %>% st_distance((polygon %>% filter(group == "catering"))) %>% `^`(-1) %>% sum
-apartments_clean_points %>% apply(MARGIN = 1, FUN = st_distance((polygon %>% filter(group == "catering")))) %>% `^`(-1) %>% sum
-apply(apartments_clean_points, MARGIN = 1, FUN = st_distance((polygon %>% filter(group == "catering"))))
-map(.x = apartments_clean_points[1:2, ], .f = as.integer(st_distance((polygon %>% filter(group == "catering")))))
+apartments_clean_points %>% st_distance((polygon %>% filter(group == "catering"))) %>%
+  `^`(-1) %>% apply(MARGIN = 1, sum) -> apartments_clean_points$dist_catering
+# there are some Inf's in the data
+apartments_clean_points[is.infinite(apartments_clean_points$dist_catering), ]  # 15 is inf
+# Trying to solve the inf's
+apartments_clean_points %>% filter(fulladress == "Berlin 12047 Weserstr. 204") %>%
+  st_distance((polygon %>% filter(group == "catering"))) %>% sub(pattern = 0, replacement = 10) %>%
+  as.numeric() %>% sort(decreasing = TRUE)
+# The inf's are comming from close proximity (0), we could say that there are 10 meters between the closest objects
+apartments_clean_points %>% filter(fulladress == "Berlin 12047 Weserstr. 204") %>%
+  st_distance((polygon %>% filter(group == "catering"))) %>% sort(decreasing = TRUE)
 
-apartments_clean_points %>% slice(1:2) %>% st_distance((polygon %>% filter(group == "catering"))) %>% `^`(-1) %>% sum
-sapply(apartments_clean_points, FUN = st_distance((polygon %>% filter(group == "catering"))))
+st_distance(apartments_clean_points[1, ], polygon[1, ])  # units are m
+
+
+apartments_clean_points %>% st_distance((polygon %>% filter(group == "catering"))) %>%
+  sub(pattern = 0, replacement = 10) %>% as.numeric() %>% `^`(-1) %>%
+  apply(MARGIN = 1, sum) -> apartments_clean_points$dist_catering
