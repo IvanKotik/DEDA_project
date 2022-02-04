@@ -261,7 +261,14 @@ apartments_clean_points %>% filter(fulladress == "Berlin 12047 Weserstr. 204") %
 
 st_distance(apartments_clean_points[1, ], polygon[1, ])  # units are m
 
+# TESTING:
+apartments_clean_points[1:2, ] %>% st_distance((polygon %>% filter(group == "catering"))) %>%
+  sub(pattern = 0, replacement = 10) %>% as.numeric() %>% `^`(-1) %>% apply(MARGIN = 1, sum)
+
 
 apartments_clean_points %>% st_distance((polygon %>% filter(group == "catering"))) %>%
-  sub(pattern = 0, replacement = 10) %>% as.numeric() %>% `^`(-1) %>%
-  apply(MARGIN = 1, sum) -> apartments_clean_points$dist_catering
+  sub(pattern = 0, replacement = 10) %>% as.numeric() %>% `^`(-1)
+
+apply(MARGIN = 1, sum)
+apartments_clean_points$dist_catering
+
