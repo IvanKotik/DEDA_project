@@ -3,6 +3,8 @@ install.packages("sf")
 library(sf)
 install.packages("tidyverse")
 library(tidyverse)
+install.packages("data.table")
+library(data.table)
 
 
 model <- read.csv("/Users/ivankotik/Documents/DEDA_project/miscellaneous/data after modelling.csv")
@@ -270,5 +272,48 @@ library(units)
 apartments_clean_points[13:15, ] %>% st_distance((polygon %>% filter(group == "catering"))) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum)
 
 ############# WORKS
-apartments_clean_points[13:15, ] %>% st_distance((polygon %>% filter(group == "catering"))) %>%
-  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum)
+table(polygon$group)
+
+apartments_clean_points %>% st_distance((polygon %>% filter(group == "catering"))) %>%
+  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$catering
+summary(apartments_clean_points$catering)
+
+apartments_clean_points %>% st_distance((polygon %>% filter(group == "activities"))) %>%
+  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$activities
+summary(apartments_clean_points$activities)
+
+apartments_clean_points %>% st_distance((polygon %>% filter(group == "destinations"))) %>%
+  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$destinations
+summary(apartments_clean_points$destinations)
+
+apartments_clean_points %>% st_distance((polygon %>% filter(group == "entertainment"))) %>%
+  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$entertainment
+summary(apartments_clean_points$entertainment)
+
+apartments_clean_points %>% st_distance((polygon %>% filter(group == "health"))) %>%
+  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$health
+summary(apartments_clean_points$health)
+
+apartments_clean_points %>% st_distance((polygon %>% filter(group == "kids"))) %>%
+  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$kids
+summary(apartments_clean_points$kids)
+
+apartments_clean_points %>% st_distance((polygon %>% filter(group == "shopping"))) %>%
+  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$shopping
+summary(apartments_clean_points$shopping)
+
+apartments_clean_points %>% st_distance((polygon %>% filter(group == "transport"))) %>%
+  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$transport
+summary(apartments_clean_points$transport)
+
+# Normalizing data
+
+apartments_clean_points$catering <- (apartments_clean_points$catering - min(apartments_clean_points$catering))/(max(apartments_clean_points$catering) - min(apartments_clean_points$catering))
+apartments_clean_points$activities <- (apartments_clean_points$activities - min(apartments_clean_points$activities))/(max(apartments_clean_points$activities) - min(apartments_clean_points$activities))
+apartments_clean_points$destinations <- (apartments_clean_points$destinations - min(apartments_clean_points$destinations))/(max(apartments_clean_points$destinations) - min(apartments_clean_points$destinations))
+apartments_clean_points$entertainment <- (apartments_clean_points$entertainment - min(apartments_clean_points$entertainment))/(max(apartments_clean_points$entertainment) - min(apartments_clean_points$entertainment))
+apartments_clean_points$health <- (apartments_clean_points$health - min(apartments_clean_points$health))/(max(apartments_clean_points$health) - min(apartments_clean_points$health))
+apartments_clean_points$kids <- (apartments_clean_points$kids - min(apartments_clean_points$kids))/(max(apartments_clean_points$kids) - min(apartments_clean_points$kids))
+apartments_clean_points$shopping <- (apartments_clean_points$shopping - min(apartments_clean_points$shopping))/(max(apartments_clean_points$shopping) - min(apartments_clean_points$shopping))
+apartments_clean_points$transport <- (apartments_clean_points$transport - min(apartments_clean_points$transport))/(max(apartments_clean_points$transport) - min(apartments_clean_points$transport))
+
