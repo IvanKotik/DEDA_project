@@ -1,32 +1,54 @@
-# Spatial analysis of Berlin rent prices
+# Spatial Berlin Rent Price Analysis
+> This is a project prepared during the Digital Economy and Decision Analytics - Blockchain and Cryptocurrency Seminar class at Humboldt University of Berlin.
 
-[WORK IN PROGRESS]
+## Motivation and Goals
+The motivation of this project came to me after I moved to Berlin and started to look more closely into the rent prices of the local market. Naturally, it was hard to get a grasp what are the rules on a market in a new country, not to even mention in a new currency. Is this apartment too expensive for what it provides? Is that a good deal, am I being ripped off or perhaps missing out on a great price? Hard to say when you can't rely on some form of passive subcounsoius price-compas that has been built up over many years. But even if you would be comfortable with any form of new currency and new prices for apartments you still might lack the idea whether an area is a place that you would enjoy living in or now. Hence I had the idea to do a research on this topic and try to figure out some form of benchmark to look up to that would help me out. In my head the benchmark should account both for the characteristics of the apartments but also what kind of area is the apartment located in. 
 
-A project to try to regress prices on rent in Berlin with the inclusion of a spatial discount factor as well as a subjective consumer preference discount index.
+While thinking about the idea how to perform this kind of research I figured that I would want to have an equation that would look something like the following:
 
-Input spatial dataset consists of spatial data on various objects including(in order) physical activities, entertainment, catering, transportation nodes, parks(in hectars), water(also in hectars), kids infrastructure, health object(pharmacies etc.), destinations(sightseeing, museum, objects of historical importance).
-All polygons:
-![alldots](https://user-images.githubusercontent.com/92677707/151255667-88a93c13-d0e8-46c8-9bee-f0526ea4762f.png)
-All points of interest multipolygons:
-![poipolyplot](https://user-images.githubusercontent.com/92677707/151255733-09be3a7e-bea3-4110-aea7-a6b67d6bda27.png)
-Parks and water objects:
-![waterforestplot](https://user-images.githubusercontent.com/92677707/151255766-9a775048-2895-4a47-8d0f-770ca8ef49a2.png)
+**Market Price = Weight * Model Price + Residuals**
 
-Cumulative description:
-![activities](https://user-images.githubusercontent.com/92677707/151195875-4cfa911d-0523-4981-b441-eabbd495019d.png)
-![entertainment](https://user-images.githubusercontent.com/92677707/151195877-4b837294-3c45-4c6b-881c-d75adae25132.png)
-![catering](https://user-images.githubusercontent.com/92677707/151195873-53ec210e-b107-4ca8-97d8-0dd6f4900cf6.png)
-![transport](https://user-images.githubusercontent.com/92677707/151195854-75b19030-24af-4541-aab1-00d704fae840.png)
-![parks](https://user-images.githubusercontent.com/92677707/151195857-e52356b6-dc98-4224-83c6-e7438e1fa1d2.png)
-![water](https://user-images.githubusercontent.com/92677707/151195879-8dfe9bcd-8981-4198-a336-1de611ecfba8.png)
-![kids](https://user-images.githubusercontent.com/92677707/151195860-3e5305bf-fb0b-43af-9b9d-743f1a7ec67f.png)
-![health](https://user-images.githubusercontent.com/92677707/151195862-a674f48c-b81e-444a-acb8-eb4467bbf9ac.png)
-![destinations](https://user-images.githubusercontent.com/92677707/151195866-76bd8103-8080-4b16-9dfb-4e622de82aec.png)
+By deriving a model for the prices based on historical data based on various apartment characteristics I could then analyse the infrastructure of Berlin on order to grade the areas by saturation by objects of interest like parks, shops etc. and create a flexible weight index that would serve me as a discount factor for the modelled price in order to account for the surrounding areas. The better the area the higher the price one would be okay with paying for that apartment, and the other way around the worse the area gets the bigger the discount a person would want for an apartment of the same parameters. This got me thining that the remaining resuduals could be viewed as a landlord premium factor. If my weighted model price would be less than the market price that would mean that the landlord has included a premium into that listed price, and in the opposite direction perhaps heor she could have undervalued the property.
 
+***Hence the goal of my research was to create a stable benchmark model to check for price fairness and then to use that info to analyze the proposed landlord premiums.***
 
-Older ideas / scrapyard
-General data layout:
-![Rplot01](https://user-images.githubusercontent.com/92677707/146861993-72e1a412-d6ab-4d6f-ab50-271e4600b516.png)
+## 1. Developing the Spatial framework 
+...comming soon
+### Import the Shape Files
+...comming soon
+### Clean the data and separate the interest groups
+...comming soon
+### Creating the cound table
+...comming soon
+### Brief lookaround
+...comming soon
 
-Created hexplot from the area for visualisation:
-![Hexplot with names](https://user-images.githubusercontent.com/92677707/147275963-a3c30797-7578-4457-92ed-3cbec9baf749.png)
+## 2. Real estate data
+...comming soon
+### Import the data and clean it
+...comming soon
+### Explore the data
+...comming soon
+### Create the model
+...comming soon
+
+## 3. Geocoding
+...comming soon
+### Connect to the OpenStreetMap API and use it
+...comming soon
+
+## 4. Distance measurment and weight factor
+...comming soon
+### Calculate the distance betweenthe apartments and the polygon objetcts
+...comming soon
+### Aggregation and normalization of the data
+...comming soon
+### Calculate the cross-section area values between the apartments walk radius and multipolygon objects
+...comming soon
+### Aggregation and normalization of the data
+...comming soon
+### Finalize the weight factors
+...comming soon
+
+## 5. Landlord premium research
+...comming soon
