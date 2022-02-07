@@ -271,7 +271,7 @@ apartments_clean_points[1:2, ] %>% st_distance((polygon %>% filter(group == "cat
 library(units)
 apartments_clean_points[13:15, ] %>% st_distance((polygon %>% filter(group == "catering"))) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum)
 
-############# WORKS
+# Calculating the distance measurment score between each apartment
 table(polygon$group)
 
 apartments_clean_points %>% st_distance((polygon %>% filter(group == "catering"))) %>%
@@ -307,7 +307,6 @@ apartments_clean_points %>% st_distance((polygon %>% filter(group == "transport"
 summary(apartments_clean_points$transport)
 
 # Normalizing data
-
 apartments_clean_points$catering <- (apartments_clean_points$catering - min(apartments_clean_points$catering))/(max(apartments_clean_points$catering) - min(apartments_clean_points$catering))
 apartments_clean_points$activities <- (apartments_clean_points$activities - min(apartments_clean_points$activities))/(max(apartments_clean_points$activities) - min(apartments_clean_points$activities))
 apartments_clean_points$destinations <- (apartments_clean_points$destinations - min(apartments_clean_points$destinations))/(max(apartments_clean_points$destinations) - min(apartments_clean_points$destinations))
@@ -316,4 +315,195 @@ apartments_clean_points$health <- (apartments_clean_points$health - min(apartmen
 apartments_clean_points$kids <- (apartments_clean_points$kids - min(apartments_clean_points$kids))/(max(apartments_clean_points$kids) - min(apartments_clean_points$kids))
 apartments_clean_points$shopping <- (apartments_clean_points$shopping - min(apartments_clean_points$shopping))/(max(apartments_clean_points$shopping) - min(apartments_clean_points$shopping))
 apartments_clean_points$transport <- (apartments_clean_points$transport - min(apartments_clean_points$transport))/(max(apartments_clean_points$transport) - min(apartments_clean_points$transport))
+
+apartments_clean_points$total_score <- apartments_clean_points$catering+apartments_clean_points$activities+apartments_clean_points$destinations+
+  apartments_clean_points$entertainment+apartments_clean_points$health+apartments_clean_points$kids+
+  apartments_clean_points$shopping+apartments_clean_points$transport
+
+apartments_clean_points$total_score_normalized <- (apartments_clean_points$total_score - min(apartments_clean_points$total_score))/(max(apartments_clean_points$total_score) - min(apartments_clean_points$total_score))
+
+# Installing the good palettes
+library(jcolors)
+display_all_jcolors_contin()
+
+# Plotting the results
+ggplot()+
+  geom_sf(data = berlin)+
+  geom_sf(data = apartments_clean_points, aes(color = total_score_normalized))+
+  scale_color_jcolors_contin("pal2")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("score_total.png", dpi = 320, scale = 1)
+
+ggplot()+
+  geom_sf(data = berlin)+
+  geom_sf(data = apartments_clean_points, aes(color = catering))+
+  scale_color_jcolors_contin("pal4")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("score_catering.png", dpi = 320, scale = 1)
+
+ggplot()+
+  geom_sf(data = berlin)+
+  geom_sf(data = apartments_clean_points, aes(color = activities))+
+  scale_color_jcolors_contin("pal4")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("score_activities.png", dpi = 320, scale = 1)
+
+ggplot()+
+  geom_sf(data = berlin)+
+  geom_sf(data = apartments_clean_points, aes(color = destinations))+
+  scale_color_jcolors_contin("pal4")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("score_destinations.png", dpi = 320, scale = 1)
+
+ggplot()+
+  geom_sf(data = berlin)+
+  geom_sf(data = apartments_clean_points, aes(color = entertainment))+
+  scale_color_jcolors_contin("pal4")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("score_entertainment.png", dpi = 320, scale = 1)
+
+ggplot()+
+  geom_sf(data = berlin)+
+  geom_sf(data = apartments_clean_points, aes(color = health))+
+  scale_color_jcolors_contin("pal4")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("score_health.png", dpi = 320, scale = 1)
+
+ggplot()+
+  geom_sf(data = berlin)+
+  geom_sf(data = apartments_clean_points, aes(color = kids))+
+  scale_color_jcolors_contin("pal4")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("score_kids.png", dpi = 320, scale = 1)
+
+ggplot()+
+  geom_sf(data = berlin)+
+  geom_sf(data = apartments_clean_points, aes(color = shopping))+
+  scale_color_jcolors_contin("pal4")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("score_shopping.png", dpi = 320, scale = 1)
+
+ggplot()+
+  geom_sf(data = berlin)+
+  geom_sf(data = apartments_clean_points, aes(color = transport))+
+  scale_color_jcolors_contin("pal4")+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("score_transport.png", dpi = 320, scale = 1)
 
