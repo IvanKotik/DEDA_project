@@ -322,8 +322,57 @@ apartments_clean_points$total_score <- apartments_clean_points$catering+apartmen
 
 apartments_clean_points$total_score_normalized <- (apartments_clean_points$total_score - min(apartments_clean_points$total_score))/(max(apartments_clean_points$total_score) - min(apartments_clean_points$total_score))
 
+# Area calculations example
+ggplot()+
+  geom_sf(data = multipolygon)+
+  geom_sf(data = st_buffer(apartments_clean_points[1:10,], set_units(2000, m)), color = "red", alpha = 0.5)+
+{theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#545454")
+  )
+  }
+ggsave("buffers.png", dpi = 320, scale = 1)
+
+table(multipolygon$group)
+seq_len(nrow(apartments_clean_points))
+# Setting up id's to later identify correct addresses
+apartments_clean_points$id <- seq_len(nrow(apartments_clean_points))
+# Calculating the intersection
+placeholder <- st_intersection(st_buffer(apartments_clean_points, set_units(2000, m)),
+                               (multipolygon %>% filter(group == "activities")))
+placeholder$area <- st_area(placeholder)
+placeholder <- aggregate(placeholder$area, by = list(id = placeholder$id), FUN = sum)
+left_join(apartments_clean_points, placeholder, by = "id")
+
+
+# test <- data.frame(bezirk = st_intersection(filter(a_ber_poi_multipolygon, group == "park"), berlin_countour)$name.1,
+#                    area = st_area(st_intersection(filter(a_ber_poi_multipolygon, group == "park"), berlin_countour)))
+#   test2 <- aggregate(test$area, by = list(test$bezirk), FUN = sum)
+#   test2 <- rename(test2, bezirk = Group.1)
+#   berlin_counter <- left_join(berlin_counter, test2, by = "bezirk")
+#   berlin_counter <- rename(berlin_counter, park = x)
+
+
+
+
+
+
+
+
+
+
+
 # Installing the good palettes
-library(jcolors)
+   library(jcolors)
 display_all_jcolors_contin()
 
 # Plotting the results
@@ -507,3 +556,9 @@ ggplot()+
   }
 ggsave("score_transport.png", dpi = 320, scale = 1)
 
+# Working on the weights
+summary(apartments_clean_points$total_score)
+summary(apartments_clean_points$total_score_normalized)
+apartments_clean_points$weights <- apartments_clean_points$total_score_normalized + 0.5
+
+# The landlord premium model
