@@ -101,8 +101,8 @@ Combined with all the previous data
 ![score_health](https://user-images.githubusercontent.com/92677707/153078223-d34d9fa7-3056-4c71-8f5e-dea5983ff0f0.png)
 ![score_kids](https://user-images.githubusercontent.com/92677707/153078229-bfc4bb88-1332-4847-8e08-820e26d14454.png)
 ![score_shopping](https://user-images.githubusercontent.com/92677707/153078239-b09b0ab0-23b6-4862-902d-e7198477870d.png)
-![score_total](https://user-images.githubusercontent.com/92677707/153078248-a212694f-5177-46c9-a576-7761ed5d201c.png)
 ![score_transport](https://user-images.githubusercontent.com/92677707/153078258-8fc4099c-dd79-459f-9157-071cb84f65bf.png)
+![score_total](https://user-images.githubusercontent.com/92677707/153078248-a212694f-5177-46c9-a576-7761ed5d201c.png)
 
 
 ## 5. Landlord premium research
