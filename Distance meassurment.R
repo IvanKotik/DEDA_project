@@ -342,34 +342,90 @@ ggplot()+
   }
 ggsave("buffers.png", dpi = 320, scale = 1)
 
+
 table(multipolygon$group)
 seq_len(nrow(apartments_clean_points))
+
 # Setting up id's to later identify correct addresses
 apartments_clean_points$id <- seq_len(nrow(apartments_clean_points))
+
+# Calcualte the distance between the multipolygon and points for all the groups except park and water objects
+apartments_clean_points %>% st_distance((multipolygon %>% filter(group == "activities"))) %>%
+  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$activities_m
+apartments_clean_points %>% st_distance((multipolygon %>% filter(group == "catering"))) %>%
+  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$catering_m
+apartments_clean_points %>% st_distance((multipolygon %>% filter(group == "destinations"))) %>%
+  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$destinations_m
+apartments_clean_points %>% st_distance((multipolygon %>% filter(group == "entertainment"))) %>%
+  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$entertainment_m
+apartments_clean_points %>% st_distance((multipolygon %>% filter(group == "health"))) %>%
+  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$health_m
+apartments_clean_points %>% st_distance((multipolygon %>% filter(group == "kids"))) %>%
+  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$kids_m
+apartments_clean_points %>% st_distance((multipolygon %>% filter(group == "shopping"))) %>%
+  + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$shopping_m
+# normalizing
+apartments_clean_points$activities_m <- (apartments_clean_points$activities_m - min(apartments_clean_points$activities_m))/
+  (max(apartments_clean_points$activities_m) - min(apartments_clean_points$activities_m))
+apartments_clean_points$catering_m <- (apartments_clean_points$catering_m - min(apartments_clean_points$catering_m))/
+  (max(apartments_clean_points$catering_m) - min(apartments_clean_points$catering_m))
+apartments_clean_points$destinations_m <- (apartments_clean_points$destinations_m - min(apartments_clean_points$destinations_m))/
+  (max(apartments_clean_points$destinations_m) - min(apartments_clean_points$destinations_m))
+apartments_clean_points$entertainment_m <- (apartments_clean_points$entertainment_m - min(apartments_clean_points$entertainment_m))/
+  (max(apartments_clean_points$entertainment_m) - min(apartments_clean_points$entertainment_m))
+apartments_clean_points$health_m <- (apartments_clean_points$health_m - min(apartments_clean_points$health_m))/
+  (max(apartments_clean_points$health_m) - min(apartments_clean_points$health_m))
+apartments_clean_points$kids_m <- (apartments_clean_points$kids_m - min(apartments_clean_points$kids_m))/
+  (max(apartments_clean_points$kids_m) - min(apartments_clean_points$kids_m))
+apartments_clean_points$shopping_m <- (apartments_clean_points$shopping_m - min(apartments_clean_points$shopping_m))/
+  (max(apartments_clean_points$shopping_m) - min(apartments_clean_points$shopping_m))
+
+# Creating
+apartments_clean_points_narrow <- select(apartments_clean_points, id, geometry)
+apartments_clean_points_narrow$buffer <- st_buffer(apartments_clean_points_narrow, set_units(2000, m))
+
+
+ggplot()+
+  geom_sf(data = (multipolygon %>% filter(group == "water")))+
+  geom_sf(data = apartments_clean_points_narrow[1:1000, 3])
+
+apartments_clean_points_narrow <- apartments_clean_points_narrow$buffer
+
 # Calculating the intersection
-placeholder <- st_intersection(st_buffer(apartments_clean_points, set_units(2000, m)),
-                               (multipolygon %>% filter(group == "activities")))
+placeholder1 <- st_intersection(apartments_clean_points_narrow[1, ],
+                               (multipolygon %>% filter(group == "water")))
+for (i in 2:7034){
+placeholder2 <- st_intersection(apartments_clean_points_narrow[i, ],
+                               (multipolygon %>% filter(group == "water")))
+placeholder1 <- bind_rows(placeholder1, placeholder2)
+  paste(Sys.time())
+}
+
+placeholder2 <- st_intersection(apartments_clean_points_narrow[1001:2000, ],
+                               (multipolygon %>% filter(group == "water")))
+
+placeholder3 <- st_intersection(apartments_clean_points_narrow[2001:3000, ],
+                               (multipolygon %>% filter(group == "water")))
+
+placeholder4 <- st_intersection(apartments_clean_points_narrow[3001:4000, ],
+                               (multipolygon %>% filter(group == "water")))
+
+placeholder5 <- st_intersection(apartments_clean_points_narrow[4001:5000, ],
+                               (multipolygon %>% filter(group == "water")))
+
+placeholder6 <- st_intersection(apartments_clean_points_narrow[5001:6000, ],
+                               (multipolygon %>% filter(group == "water")))
+
+placeholder7 <- st_intersection(apartments_clean_points_narrow[6001:7000, ],
+                               (multipolygon %>% filter(group == "water")))
+
+bind_rows(placeholder1, placeholder2, placeholder3)
 placeholder$area <- st_area(placeholder)
 placeholder <- aggregate(placeholder$area, by = list(id = placeholder$id), FUN = sum)
 left_join(apartments_clean_points, placeholder, by = "id")
 
 
-# test <- data.frame(bezirk = st_intersection(filter(a_ber_poi_multipolygon, group == "park"), berlin_countour)$name.1,
-#                    area = st_area(st_intersection(filter(a_ber_poi_multipolygon, group == "park"), berlin_countour)))
-#   test2 <- aggregate(test$area, by = list(test$bezirk), FUN = sum)
-#   test2 <- rename(test2, bezirk = Group.1)
-#   berlin_counter <- left_join(berlin_counter, test2, by = "bezirk")
-#   berlin_counter <- rename(berlin_counter, park = x)
-
-
-
-
-
-
-
-
-
-
+placeholder <- st_intersection(apartments_clean_points_narrow$buffer, multipolygon %>% filter(group == "activities"))
 
 # Installing the good palettes
    library(jcolors)
