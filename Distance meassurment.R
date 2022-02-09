@@ -3,12 +3,9 @@ install.packages("sf")
 library(sf)
 install.packages("tidyverse")
 library(tidyverse)
-install.packages("data.table")
-library(data.table)
 
-
-model <- read.csv("/Users/ivankotik/Documents/DEDA_project/miscellaneous/data after modelling.csv")
-geocoding <- read.csv("/Users/ivankotik/Documents/DEDA_project/miscellaneous/coordinates_osm_v2.csv")
+model <- read.csv("/Users/ivankotik/Documents/DEDA_project/files and graphs/data after modelling.csv")
+geocoding <- read.csv("/Users/ivankotik/Documents/DEDA_project/files and graphs/coordinates_osm_v2.csv")
 
 # Getting the shapefiles from previous files
 {
@@ -315,11 +312,11 @@ apartments_clean_points$health <- (apartments_clean_points$health - min(apartmen
 apartments_clean_points$kids <- (apartments_clean_points$kids - min(apartments_clean_points$kids))/(max(apartments_clean_points$kids) - min(apartments_clean_points$kids))
 apartments_clean_points$shopping <- (apartments_clean_points$shopping - min(apartments_clean_points$shopping))/(max(apartments_clean_points$shopping) - min(apartments_clean_points$shopping))
 apartments_clean_points$transport <- (apartments_clean_points$transport - min(apartments_clean_points$transport))/(max(apartments_clean_points$transport) - min(apartments_clean_points$transport))
-
+# Total score calculation
 apartments_clean_points$total_score <- apartments_clean_points$catering+apartments_clean_points$activities+apartments_clean_points$destinations+
   apartments_clean_points$entertainment+apartments_clean_points$health+apartments_clean_points$kids+
   apartments_clean_points$shopping+apartments_clean_points$transport
-
+# Total score normalized
 apartments_clean_points$total_score_normalized <- (apartments_clean_points$total_score - min(apartments_clean_points$total_score))/(max(apartments_clean_points$total_score) - min(apartments_clean_points$total_score))
 
 # Area calculations example
@@ -364,6 +361,7 @@ apartments_clean_points %>% st_distance((multipolygon %>% filter(group == "kids"
   + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$kids_m
 apartments_clean_points %>% st_distance((multipolygon %>% filter(group == "shopping"))) %>%
   + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$shopping_m
+
 # normalizing
 apartments_clean_points$activities_m <- (apartments_clean_points$activities_m - min(apartments_clean_points$activities_m))/
   (max(apartments_clean_points$activities_m) - min(apartments_clean_points$activities_m))
@@ -395,10 +393,11 @@ apartments_clean_points_narrow <- apartments_clean_points_narrow$buffer
 placeholder1 <- st_intersection(apartments_clean_points_narrow[1, ],
                                (multipolygon %>% filter(group == "water")))
 for (i in 2:7034){
-placeholder2 <- st_intersection(apartments_clean_points_narrow[i, ],
+  placeholder2 <- st_intersection(apartments_clean_points_narrow[i, ],
                                (multipolygon %>% filter(group == "water")))
-placeholder1 <- bind_rows(placeholder1, placeholder2)
-  paste(Sys.time())
+  placeholder1 <- bind_rows(placeholder1, placeholder2)
+  print(Sys.time())
+  print(i)
 }
 
 placeholder2 <- st_intersection(apartments_clean_points_narrow[1001:2000, ],
