@@ -400,25 +400,21 @@ for (i in 2:7034){
   print(i)
 }
 
-placeholder2 <- st_intersection(apartments_clean_points_narrow[1001:2000, ],
-                               (multipolygon %>% filter(group == "water")))
+write_csv(placeholder1, file = "/Users/ivankotik/Documents/shape_files/intersection_water_apartments.csv")
 
-placeholder3 <- st_intersection(apartments_clean_points_narrow[2001:3000, ],
-                               (multipolygon %>% filter(group == "water")))
+# Could not execute this code, not enought memory:
+# placeholder3 <- st_intersection(apartments_clean_points_narrow[1, ],
+#                                (multipolygon %>% filter(group == "park")))
+# for (i in 2:7034){
+#   placeholder4 <- st_intersection(apartments_clean_points_narrow[i, ],
+#                                (multipolygon %>% filter(group == "park")))
+#   placeholder3 <- bind_rows(placeholder3, placeholder4)
+#   print(Sys.time())
+#   print(i)
+# }
+#
+# placeholder3
 
-placeholder4 <- st_intersection(apartments_clean_points_narrow[3001:4000, ],
-                               (multipolygon %>% filter(group == "water")))
-
-placeholder5 <- st_intersection(apartments_clean_points_narrow[4001:5000, ],
-                               (multipolygon %>% filter(group == "water")))
-
-placeholder6 <- st_intersection(apartments_clean_points_narrow[5001:6000, ],
-                               (multipolygon %>% filter(group == "water")))
-
-placeholder7 <- st_intersection(apartments_clean_points_narrow[6001:7000, ],
-                               (multipolygon %>% filter(group == "water")))
-
-bind_rows(placeholder1, placeholder2, placeholder3)
 placeholder$area <- st_area(placeholder)
 placeholder <- aggregate(placeholder$area, by = list(id = placeholder$id), FUN = sum)
 left_join(apartments_clean_points, placeholder, by = "id")
