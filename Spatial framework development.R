@@ -511,3 +511,7 @@ write.csv2(x_distance_multipolygon, "/Users/ivankotik/Documents/DEDA_project/mis
 write.table(x_distance_multipolygon, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/x_distance_multipolygon.csv", sep = "|")
 write.csv2(x_distance_polygon, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/x_distance_polygon.csv")
 write.table(x_distance_polygon, "/Users/ivankotik/Documents/DEDA_project/miscellaneous/x_distance_polygon.csv", sep = "|")
+
+write_sf(x_distance_polygon, "/Users/ivankotik/Documents/DEDA_project/files and graphs/polygon.shp")
+write_sf(x_distance_multipolygon, "/Users/ivankotik/Documents/DEDA_project/files and graphs/multipolygon.shp")
+write_sf(x_berlin, "/Users/ivankotik/Documents/DEDA_project/files and graphs/berlin.shp")
