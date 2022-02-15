@@ -102,12 +102,15 @@ options(scipen=999)
 # The distance calculation
 apartments_clean_points %>% st_distance((polygon %>% filter(group == "catering"))) %>%
   `^`(-1) %>% apply(MARGIN = 1, sum) -> apartments_clean_points$dist_catering
+
 # there are some Inf's in the data
 apartments_clean_points[is.infinite(apartments_clean_points$dist_catering), ]  # 15 is inf
+
 # Trying to solve the inf's
 apartments_clean_points %>% filter(fulladress == "Berlin 12047 Weserstr. 204") %>%
   st_distance((polygon %>% filter(group == "catering"))) %>% sub(pattern = 0, replacement = 10) %>%
   as.numeric() %>% sort(decreasing = TRUE)
+
 # The inf's are comming from close proximity (0), we could say that there are 10 meters between the closest objects
 apartments_clean_points %>% filter(fulladress == "Berlin 12047 Weserstr. 204") %>%
   st_distance((polygon %>% filter(group == "catering"))) %>% sort(decreasing = TRUE)
@@ -125,6 +128,7 @@ apartments_clean_points[13:15, ] %>% st_distance((polygon %>% filter(group == "c
 # Calculating the distance measurment score between each apartment
 table(polygon$group)
 
+# End result:
 apartments_clean_points %>% st_distance((polygon %>% filter(group == "catering"))) %>%
   + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$catering
 summary(apartments_clean_points$catering)
@@ -232,18 +236,38 @@ apartments_clean_points$kids_m <- (apartments_clean_points$kids_m - min(apartmen
 apartments_clean_points$shopping_m <- (apartments_clean_points$shopping_m - min(apartments_clean_points$shopping_m))/
   (max(apartments_clean_points$shopping_m) - min(apartments_clean_points$shopping_m))
 
+
+# WORKING AREA
+
+{
 # Creating
 apartments_clean_points_narrow <- select(apartments_clean_points, id, geometry)
-apartments_clean_points_narrow$buffer <- st_buffer(apartments_clean_points_narrow, set_units(2000, m))
+apartments_clean_points_narrow$buffer <- st_buffer(apartments_clean_points_narrow, set_units(1500, m))
 
 
 ggplot()+
   geom_sf(data = (multipolygon %>% filter(group == "water")))+
   geom_sf(data = apartments_clean_points_narrow[1:1000, 3])
 
+st_intersection(st_buffer(apartments_clean_points, set_units(1500, m)), (multipolygon %>% filter(group == "water")))
+
+
+apartments_clean_points_narrow %>% slice(1:3) -> dataset
+multipolygon[multipolygon$group == "park",] -> multipolygon_park
+
+dataset %>%
+  st_buffer(set_units(1500, m)) %>%
+  st_intersection(multipolygon_park)
+
+apartments_clean_points %>%
+  st_buffer(set_units(1500, m)) %>%
+  st_intersection(multipolygon_park) -> park_intersection
+
+
+
 apartments_clean_points_narrow <- apartments_clean_points_narrow$buffer
 
-# Calculating the intersection
+# Calculating the intersection DIDNT WORK
 placeholder1 <- st_intersection(apartments_clean_points_narrow[1, ],
                                (multipolygon %>% filter(group == "water")))
 for (i in 2:7034){
@@ -253,34 +277,15 @@ for (i in 2:7034){
   print(Sys.time())
   print(i)
 }
+} # this script is too heavy for my machine to hadle
 
-write_csv(placeholder1, file = "/Users/ivankotik/Documents/shape_files/intersection_water_apartments.csv")
-
-# Could not execute this code, not enought memory:
-# placeholder3 <- st_intersection(apartments_clean_points_narrow[1, ],
-#                                (multipolygon %>% filter(group == "park")))
-# for (i in 2:7034){
-#   placeholder4 <- st_intersection(apartments_clean_points_narrow[i, ],
-#                                (multipolygon %>% filter(group == "park")))
-#   placeholder3 <- bind_rows(placeholder3, placeholder4)
-#   print(Sys.time())
-#   print(i)
-# }
-#
-# placeholder3
-
-placeholder$area <- st_area(placeholder)
-placeholder <- aggregate(placeholder$area, by = list(id = placeholder$id), FUN = sum)
-left_join(apartments_clean_points, placeholder, by = "id")
-
-
-placeholder <- st_intersection(apartments_clean_points_narrow$buffer, multipolygon %>% filter(group == "activities"))
 
 # Installing the good palettes
-   library(jcolors)
+library(jcolors)
 display_all_jcolors_contin()
 
 # Plotting the results
+{
 ggplot()+
   geom_sf(data = berlin)+
   geom_sf(data = apartments_clean_points, aes(color = total_score_normalized))+
@@ -460,6 +465,8 @@ ggplot()+
   )
   }
 ggsave("score_transport.png", dpi = 320, scale = 1)
+}
+
 
 # Working on the weights
 summary(apartments_clean_points$total_score)
