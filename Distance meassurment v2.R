@@ -411,6 +411,7 @@ ggplot()+
     title = element_text(colour = "#cacaca")
   )
   }
+ggsave("Premiums.png", dpi = 320, scale = 1)
 
 # Total scores normalized
 ggplot()+
@@ -433,5 +434,4 @@ ggplot()+
     title = element_text(colour = "#cacaca")
   )
   }
-
-# ggsave("score_total.png", dpi = 320, scale = 1)
+ggsave("Scores_normalized.png", dpi = 320, scale = 1)

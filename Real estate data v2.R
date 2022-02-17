@@ -109,6 +109,7 @@ data_berlin %>% filter(noRooms != 99.5) -> data_berlin
 # Checking whether heatingTypes have a influence on the price
 ggplot(data_berlin[data_berlin[, "totalRent"]<5000, ], aes(x = livingSpace, y = totalRent, color = heatingType))+
   geom_point()+
+  labs(title = "HEATING TYPE", color = "TYPES", x = "Living Space, m^2", y = "Total Rent, EUR")+
   {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
@@ -120,7 +121,8 @@ ggplot(data_berlin[data_berlin[, "totalRent"]<5000, ], aes(x = livingSpace, y = 
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca")
   )
   }
 ggsave("heatingtypewithoutlines.png", dpi = 320, scale = 1)
@@ -128,6 +130,7 @@ ggsave("heatingtypewithoutlines.png", dpi = 320, scale = 1)
 ggplot(data_berlin[data_berlin[, "totalRent"]<5000, ], aes(x = livingSpace, y = totalRent, color = heatingType))+
   geom_point(size = 0.75, alpha = 0.2)+
   geom_smooth(se = FALSE, method = lm, size = 0.7)+
+  labs(title = "HEATING TYPE", color = "TYPES", x = "Living Space, m^2", y = "Total Rent, EUR")+
   {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
@@ -139,7 +142,8 @@ ggplot(data_berlin[data_berlin[, "totalRent"]<5000, ], aes(x = livingSpace, y = 
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca")
   )
   }  # based on the graps it can be seen that there is no heavy difference between the types
 ggsave("heatingtypewithlines.png", dpi = 320, scale = 1)

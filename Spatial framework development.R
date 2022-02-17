@@ -198,29 +198,9 @@ ggsave("temporary.png", dpi = 320, scale = 1)
 
 
 ggplot()+
-  geom_sf(data = berlin_countour, color = "white", fill = "grey", alpha = 0.5)+
-  geom_sf(data = d_ber_water_multipolygons, color = "blue", fill = "lightblue", alpha = 0.5)+
-  geom_sf(data = b_ber_landuse_multipolygon, color = "green", fill = "lightgreen", alpha = 0.5)+
-  {theme(
-    panel.background = element_rect(fill = "#222222",
-                                  colour = "#222222",
-                                  size = 0.1, linetype = "solid"),
-    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "white"),
-    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "#222222"),
-    plot.background = element_rect(fill = "#222222"),
-    legend.background = element_rect(fill = "#222222"),
-    legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
-  )
-  }
-ggsave("temporary2.png", dpi = 320, scale = 1)
-
-
-ggplot()+
   geom_sf(data = berlin_countour)+
   geom_sf(data = c_ber_transport_polygon, aes(color = fclass), size = 0.5)+
+  labs(title = "TRANSPORT", color = "TYPES")+
   {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
@@ -232,9 +212,10 @@ ggplot()+
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca")
   )
-  }
+  }  # based
   ggsave("temporary3.png", dpi = 320, scale = 1)
 
 
@@ -249,7 +230,8 @@ display_all_jcolors_contin()
 ggplot(data = x_berlin)+
   geom_sf(aes(fill = entertainment))+
   scale_fill_jcolors_contin("pal11")+
-{theme(
+  labs(title = "ENTERTAINMENT OBJECTS", fill = "QUANITY")+
+  {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
                                   size = 0.1, linetype = "solid"),
@@ -260,16 +242,18 @@ ggplot(data = x_berlin)+
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca")
   )
-  }
+  }  # based
 ggsave("entertainment.png", dpi = 320, scale = 1)
 
 # activities plot
 ggplot(data = x_berlin)+
   geom_sf(aes(fill = activities))+
   scale_fill_jcolors_contin("pal11")+
-{theme(
+  labs(title = "ACTIVITIES OBJECTS", fill = "QUANITY")+
+  {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
                                   size = 0.1, linetype = "solid"),
@@ -280,7 +264,8 @@ ggplot(data = x_berlin)+
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca")
   )
   }
 ggsave("activities.png", dpi = 320, scale = 1)
@@ -289,7 +274,8 @@ ggsave("activities.png", dpi = 320, scale = 1)
 ggplot(data = x_berlin)+
   geom_sf(aes(fill = catering))+
   scale_fill_jcolors_contin("pal11")+
-{theme(
+  labs(title = "CATERING OBJECTS", fill = "QUANITY")+
+  {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
                                   size = 0.1, linetype = "solid"),
@@ -300,7 +286,8 @@ ggplot(data = x_berlin)+
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca")
   )
   }
 ggsave("catering.png", dpi = 320, scale = 1)
@@ -309,7 +296,8 @@ ggsave("catering.png", dpi = 320, scale = 1)
 ggplot(data = x_berlin)+
   geom_sf(aes(fill = destinations))+
   scale_fill_jcolors_contin("pal11")+
-{theme(
+  labs(title = "TOURISM/SIGHTSEEING OBJECTS", fill = "QUANITY")+
+  {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
                                   size = 0.1, linetype = "solid"),
@@ -320,7 +308,8 @@ ggplot(data = x_berlin)+
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca")
   )
   }
 ggsave("destinations.png", dpi = 320, scale = 1)
@@ -329,7 +318,8 @@ ggsave("destinations.png", dpi = 320, scale = 1)
 ggplot(data = x_berlin)+
   geom_sf(aes(fill = health))+
   scale_fill_jcolors_contin("pal11")+
-{theme(
+  labs(title = "HEALTH OBJECTS", fill = "QUANITY")+
+  {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
                                   size = 0.1, linetype = "solid"),
@@ -340,7 +330,8 @@ ggplot(data = x_berlin)+
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca")
   )
   }
 ggsave("health.png", dpi = 320, scale = 1)
@@ -349,7 +340,8 @@ ggsave("health.png", dpi = 320, scale = 1)
 ggplot(data = x_berlin)+
   geom_sf(aes(fill = kids))+
   scale_fill_jcolors_contin("pal11")+
-{theme(
+  labs(title = "KIDS OBJECTS", fill = "QUANITY")+
+  {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
                                   size = 0.1, linetype = "solid"),
@@ -360,7 +352,8 @@ ggplot(data = x_berlin)+
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca")
   )
   }
 ggsave("kids.png", dpi = 320, scale = 1)
@@ -369,11 +362,12 @@ ggsave("kids.png", dpi = 320, scale = 1)
 xx_berlin <- x_berlin
 xx_berlin$park <- as.integer(xx_berlin$park/(100*100))
 options(scipen=999)
+
 ggplot(data = xx_berlin)+
   geom_sf(aes(fill = park))+
   scale_fill_jcolors_contin(palette = "pal11")+
-  labs(fill = "Parks, hec.")+
-{theme(
+  labs(title = "PARK OBJECTS", fill = "PARKS, HEC.")+
+  {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
                                   size = 0.1, linetype = "solid"),
@@ -384,7 +378,8 @@ ggplot(data = xx_berlin)+
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca")
   )
   }
 ggsave("parks.png", dpi = 320, scale = 1)
@@ -394,7 +389,8 @@ ggplot(data = x_berlin)+
   geom_sf(aes(fill = transport))+
   labs(fill = "transportation")+
   scale_fill_jcolors_contin("pal11")+
-{theme(
+  labs(title = "TRANSPORT OBJECTS", fill = "QUANITY")+
+  {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
                                   size = 0.1, linetype = "solid"),
@@ -405,18 +401,20 @@ ggplot(data = x_berlin)+
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca")
   )
   }
 ggsave("transport.png", dpi = 320, scale = 1)
 
 # water plot
 xx_berlin$water <- as.integer(xx_berlin$water/(100*100))
+
 ggplot(data = xx_berlin)+
   geom_sf(aes(fill = water))+
   scale_fill_jcolors_contin(palette = "pal11")+
-  labs(fill = "water, hec.")+
-{theme(
+  labs(title = "WATER OBJECTS", fill = "WATER, HEC.")+
+  {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
                                   size = 0.1, linetype = "solid"),
@@ -427,7 +425,8 @@ ggplot(data = xx_berlin)+
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca")
   )
   }
 ggsave("water.png", dpi = 320, scale = 1)
@@ -445,7 +444,8 @@ ggplot()+
   geom_sf(data = x_berlin, fill = NA)+
   geom_sf(data = x_distance_polygon, aes(color = group), size = 0.4, alpha = 0.85)+
   scale_color_jcolors("pal8")+
-{theme(
+  labs(title = "ALL OBJECTS", color = "TYPE")+
+  {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
                                   size = 0.1, linetype = "solid"),
@@ -456,7 +456,8 @@ ggplot()+
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca")
   )
   }
 ggsave("alldots.png", dpi = 320, scale = 1)
@@ -465,7 +466,8 @@ ggsave("alldots.png", dpi = 320, scale = 1)
 ggplot()+
   geom_sf(data = x_berlin)+
   geom_sf(data = a_ber_poi_multipolygon, aes(fill = group))+
-{theme(
+  labs(title = "ALL MULTIPOLYGON OBJECTS", fill = "TYPE")+
+  {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
                                   size = 0.1, linetype = "solid"),
@@ -476,7 +478,8 @@ ggplot()+
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca")
   )
   }
 ggsave("poipolyplot.png", dpi = 320, scale = 1)
@@ -486,7 +489,8 @@ ggplot()+
   geom_sf(data = x_berlin)+
   geom_sf(data = b_ber_landuse_multipolygon, fill = "lightgreen")+
   geom_sf(data = d_ber_water_multipolygons, fill = "lightblue")+
-{theme(
+  labs(title = "ALL WATER AND PARK OBJECTS", fill = "OBJECT")+
+  {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
                                   size = 0.1, linetype = "solid"),
@@ -497,7 +501,8 @@ ggplot()+
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca")
   )
   }
 ggsave("waterforestplot.png", dpi = 320, scale = 1)

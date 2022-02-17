@@ -13,8 +13,13 @@ library(geogrid)
 # importing OSM data from daten.berlin.de
 # the points of interest in multipolygon format
 berlin_mp <- read_sf(dsn = "C://Users//ivkot//Downloads//berlin-latest-free.shp//gis_osm_pois_a_free_1.shp")
+# mac
+berlin_mp <- read_sf(dsn = "/Users/ivankotik/Documents/shape_files/gis_osm_pois_a_free_1.shp")
+
 # the points of interest in point format
 berlin_po <- read_sf(dsn = "C://Users//ivkot//Downloads//berlin-latest-free.shp//gis_osm_pois_free_1.shp")
+# mac
+berlin_po <- read_sf(dsn = "/Users/ivankotik/Documents/shape_files/gis_osm_pois_free_1.shp")
 # ------------------------------------------------------------------------------------------------
 # => these are the main dataframes that will give us the points of interest for further evaluation
 # ------------------------------------------------------------------------------------------------
@@ -109,6 +114,8 @@ data.frame(x = as.numeric(str_extract(as.character(berlin_po_filtered$geometry),
 # PART 6
 # importing and checking the countor map
 berlin_countour <- read_sf(dsn = "C://Users//ivkot//Downloads//berlin-latest-free.shp//gis_osm_places_a_free_1.shp")
+berlin_countour <- read_sf(dsn = "/Users/ivankotik/Documents/shape_files/gis_osm_places_a_free_1.shp")
+
 berlin_countour <- filter(berlin_countour, fclass == "suburb")
 berlin_countour <- berlin_countour[, 5:6]
 plot(berlin_countour)
