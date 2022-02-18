@@ -270,6 +270,28 @@ ggplot(data = x_berlin)+
   }
 ggsave("activities.png", dpi = 320, scale = 1)
 
+# Shopping plot
+ggplot(data = x_berlin)+
+  geom_sf(aes(fill = shopping))+
+  scale_fill_jcolors_contin("pal11")+
+  labs(title = "SHOPPING OBJECTS", fill = "QUANTITY")+
+  {theme(
+    panel.background = element_rect(fill = "#222222",
+                                  colour = "#222222",
+                                  size = 0.1, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "white"),
+    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                  colour = "#222222"),
+    plot.background = element_rect(fill = "#222222"),
+    legend.background = element_rect(fill = "#222222"),
+    legend.title = element_text(colour = "#cacaca"),
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca")
+  )
+  }
+ggsave("shopping.png", dpi = 320, scale = 1)
+
 # catering plot
 ggplot(data = x_berlin)+
   geom_sf(aes(fill = catering))+

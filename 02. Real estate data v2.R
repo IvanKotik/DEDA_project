@@ -159,13 +159,14 @@ data_berlin_model %>% filter(is.na(price) == FALSE) -> data_berlin_model
 data_berlin_model_withnames %>% filter(is.na(price) == FALSE) -> data_berlin_model_withnames
 
 # Including everyting
-summary(lm(price ~ ., data = data_berlin_model))
-model_1 <- lm(price ~ ., data = data_berlin_model)
+data_berlin_model_alltime <- data_berlin_model[, 1:19]
+summary(lm(price ~ ., data = data_berlin_model_alltime))
+model_1 <- lm(price ~ ., data = data_berlin_model_alltime)
 
 # Initial filtering of parameterts
 summary(lm(price ~ livingSpace + hasKitchen + floor + numberOfFloors + lift, data = data_berlin_model))
 model_2 <- lm(price ~ livingSpace + hasKitchen + floor + numberOfFloors + lift, data = data_berlin_model)
-plot(model_2)
+autoplot(model_1)
 
 # Getting read of the externalities
 ggplot(data_berlin_model, aes(x = price))+
@@ -184,7 +185,7 @@ summary(model_2_2)  # deleting floors due to insignificance
 autoplot(model_2_2)
 
 model_2_3 <- lm(log(price) ~ livingSpace + hasKitchen + lift, data = data_berlin_model_filter)
-summary(model_2_3)  # deleting floors due to insignificance
+summary(model_2_3)
 autoplot(model_2_3)
 
 data_berlin_model_filter$model2_2 <- model_2_2$fitted.values
