@@ -230,7 +230,7 @@ display_all_jcolors_contin()
 ggplot(data = x_berlin)+
   geom_sf(aes(fill = entertainment))+
   scale_fill_jcolors_contin("pal11")+
-  labs(title = "ENTERTAINMENT OBJECTS", fill = "QUANITY")+
+  labs(title = "ENTERTAINMENT OBJECTS", fill = "QUANTITY")+
   {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
@@ -252,7 +252,7 @@ ggsave("entertainment.png", dpi = 320, scale = 1)
 ggplot(data = x_berlin)+
   geom_sf(aes(fill = activities))+
   scale_fill_jcolors_contin("pal11")+
-  labs(title = "ACTIVITIES OBJECTS", fill = "QUANITY")+
+  labs(title = "ACTIVITIES OBJECTS", fill = "QUANTITY")+
   {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
@@ -274,7 +274,7 @@ ggsave("activities.png", dpi = 320, scale = 1)
 ggplot(data = x_berlin)+
   geom_sf(aes(fill = catering))+
   scale_fill_jcolors_contin("pal11")+
-  labs(title = "CATERING OBJECTS", fill = "QUANITY")+
+  labs(title = "CATERING OBJECTS", fill = "QUANTITY")+
   {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
@@ -296,7 +296,7 @@ ggsave("catering.png", dpi = 320, scale = 1)
 ggplot(data = x_berlin)+
   geom_sf(aes(fill = destinations))+
   scale_fill_jcolors_contin("pal11")+
-  labs(title = "TOURISM/SIGHTSEEING OBJECTS", fill = "QUANITY")+
+  labs(title = "TOURISM/SIGHTSEEING OBJECTS", fill = "QUANTITY")+
   {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
@@ -318,7 +318,7 @@ ggsave("destinations.png", dpi = 320, scale = 1)
 ggplot(data = x_berlin)+
   geom_sf(aes(fill = health))+
   scale_fill_jcolors_contin("pal11")+
-  labs(title = "HEALTH OBJECTS", fill = "QUANITY")+
+  labs(title = "HEALTH OBJECTS", fill = "QUANTITY")+
   {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
@@ -340,7 +340,7 @@ ggsave("health.png", dpi = 320, scale = 1)
 ggplot(data = x_berlin)+
   geom_sf(aes(fill = kids))+
   scale_fill_jcolors_contin("pal11")+
-  labs(title = "KIDS OBJECTS", fill = "QUANITY")+
+  labs(title = "KIDS OBJECTS", fill = "QUANTITY")+
   {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
@@ -389,7 +389,7 @@ ggplot(data = x_berlin)+
   geom_sf(aes(fill = transport))+
   labs(fill = "transportation")+
   scale_fill_jcolors_contin("pal11")+
-  labs(title = "TRANSPORT OBJECTS", fill = "QUANITY")+
+  labs(title = "TRANSPORT OBJECTS", fill = "QUANTITY")+
   {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
