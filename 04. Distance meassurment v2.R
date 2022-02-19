@@ -67,40 +67,6 @@ apartments_clean_points %>% st_distance((polygon %>% filter(group == "shopping")
 apartments_clean_points %>% st_distance((polygon %>% filter(group == "transport"))) %>%
   + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$transport_p
 
-# Normalizing data
-apartments_clean_points$catering_p <- (apartments_clean_points$catering_p - min(apartments_clean_points$catering_p))/
-  (max(apartments_clean_points$catering_p) - min(apartments_clean_points$catering_p))
-
-apartments_clean_points$activities_p <- (apartments_clean_points$activities_p - min(apartments_clean_points$activities_p))/
-  (max(apartments_clean_points$activities_p) - min(apartments_clean_points$activities_p))
-
-apartments_clean_points$destinations_p <- (apartments_clean_points$destinations_p - min(apartments_clean_points$destinations_p))/
-  (max(apartments_clean_points$destinations_p) - min(apartments_clean_points$destinations_p))
-
-apartments_clean_points$entertainment_p <- (apartments_clean_points$entertainment - min(apartments_clean_points$entertainment))/
-  (max(apartments_clean_points$entertainment_p) - min(apartments_clean_points$entertainment))
-
-apartments_clean_points$health_p <- (apartments_clean_points$health_p - min(apartments_clean_points$health_p))/
-  (max(apartments_clean_points$health_p) - min(apartments_clean_points$health_p))
-
-apartments_clean_points$kids_p <- (apartments_clean_points$kids_p - min(apartments_clean_points$kids_p))/
-  (max(apartments_clean_points$kids_p) - min(apartments_clean_points$kids_p))
-
-apartments_clean_points$shopping_p <- (apartments_clean_points$shopping_p - min(apartments_clean_points$shopping_p))/
-  (max(apartments_clean_points$shopping_p) - min(apartments_clean_points$shopping_p))
-
-apartments_clean_points$transport_p <- (apartments_clean_points$transport_p - min(apartments_clean_points$transport_p))/
-  (max(apartments_clean_points$transport_p) - min(apartments_clean_points$transport_p))
-
-# Total score calculation
-apartments_clean_points$total_score_p <- apartments_clean_points$catering_p + apartments_clean_points$activities_p +
-  apartments_clean_points$destinations_p + apartments_clean_points$entertainment_p + apartments_clean_points$health_p +
-  apartments_clean_points$kids_p + apartments_clean_points$shopping_p + apartments_clean_points$transport_p
-
-# Total score normalized
-apartments_clean_points$total_score_normalized_p <- (apartments_clean_points$total_score_p - min(apartments_clean_points$total_score_p))/
-  (max(apartments_clean_points$total_score_p) - min(apartments_clean_points$total_score_p))
-
 
 ### Calaulating distance multipolygons
 # Calcualte the distance between the multipolygon and points for all the groups
@@ -131,58 +97,70 @@ apartments_clean_points %>% st_distance((multipolygon %>% filter(group == "park"
 apartments_clean_points %>% st_distance((multipolygon %>% filter(group == "water"))) %>%
   + set_units(10, m) %>% `^`(-1) %>% apply(MARGIN = 1, FUN = sum) -> apartments_clean_points$water_m
 
-# normalizing the data
-apartments_clean_points$activities_m <- (apartments_clean_points$activities_m - min(apartments_clean_points$activities_m))/
-  (max(apartments_clean_points$activities_m) - min(apartments_clean_points$activities_m))
+# Combining the distances
+apartments_clean_points$activities <- apartments_clean_points$activities_m + apartments_clean_points$activities_p
+apartments_clean_points$catering <- apartments_clean_points$catering_m + apartments_clean_points$catering_p
+apartments_clean_points$destinations <- apartments_clean_points$destinations_m + apartments_clean_points$destinations_p
+apartments_clean_points$entertainment <- apartments_clean_points$entertainment_m + apartments_clean_points$entertainment_p
+apartments_clean_points$health <- apartments_clean_points$health_m + apartments_clean_points$health_p
+apartments_clean_points$kids <- apartments_clean_points$kids_m + apartments_clean_points$kids_p
+apartments_clean_points$shopping <- apartments_clean_points$shopping_m + apartments_clean_points$shopping_p
+apartments_clean_points$transport <- apartments_clean_points$transport_p
+apartments_clean_points$park <- apartments_clean_points$park_m
+apartments_clean_points$water <- apartments_clean_points$water_m
 
-apartments_clean_points$catering_m <- (apartments_clean_points$catering_m - min(apartments_clean_points$catering_m))/
-  (max(apartments_clean_points$catering_m) - min(apartments_clean_points$catering_m))
+# Normalizing the data
+apartments_clean_points$norm_activities <- (apartments_clean_points$activities - min(apartments_clean_points$activities))/
+  (max(apartments_clean_points$activities) - min(apartments_clean_points$activities))
 
-apartments_clean_points$destinations_m <- (apartments_clean_points$destinations_m - min(apartments_clean_points$destinations_m))/
-  (max(apartments_clean_points$destinations_m) - min(apartments_clean_points$destinations_m))
+apartments_clean_points$norm_catering <- (apartments_clean_points$catering - min(apartments_clean_points$catering))/
+  (max(apartments_clean_points$catering) - min(apartments_clean_points$catering))
 
-apartments_clean_points$entertainment_m <- (apartments_clean_points$entertainment_m - min(apartments_clean_points$entertainment_m))/
-  (max(apartments_clean_points$entertainment_m) - min(apartments_clean_points$entertainment_m))
+apartments_clean_points$norm_destinations <- (apartments_clean_points$destinations - min(apartments_clean_points$destinations))/
+  (max(apartments_clean_points$destinations) - min(apartments_clean_points$destinations))
 
-apartments_clean_points$health_m <- (apartments_clean_points$health_m - min(apartments_clean_points$health_m))/
-  (max(apartments_clean_points$health_m) - min(apartments_clean_points$health_m))
+apartments_clean_points$norm_entertainment <- (apartments_clean_points$entertainment - min(apartments_clean_points$entertainment))/
+  (max(apartments_clean_points$entertainment) - min(apartments_clean_points$entertainment))
 
-apartments_clean_points$kids_m <- (apartments_clean_points$kids_m - min(apartments_clean_points$kids_m))/
-  (max(apartments_clean_points$kids_m) - min(apartments_clean_points$kids_m))
+apartments_clean_points$norm_health <- (apartments_clean_points$health - min(apartments_clean_points$health))/
+  (max(apartments_clean_points$health) - min(apartments_clean_points$health))
 
-apartments_clean_points$shopping_m <- (apartments_clean_points$shopping_m - min(apartments_clean_points$shopping_m))/
-  (max(apartments_clean_points$shopping_m) - min(apartments_clean_points$shopping_m))
+apartments_clean_points$norm_kids <- (apartments_clean_points$kids - min(apartments_clean_points$kids))/
+  (max(apartments_clean_points$kids) - min(apartments_clean_points$kids))
 
-apartments_clean_points$park_m <- (apartments_clean_points$park_m - min(apartments_clean_points$park_m))/
-  (max(apartments_clean_points$park_m) - min(apartments_clean_points$park_m))
+apartments_clean_points$norm_shopping <- (apartments_clean_points$shopping - min(apartments_clean_points$shopping))/
+  (max(apartments_clean_points$shopping) - min(apartments_clean_points$shopping))
 
-apartments_clean_points$water_m <- (apartments_clean_points$water_m - min(apartments_clean_points$water_m))/
-  (max(apartments_clean_points$water_m) - min(apartments_clean_points$water_m))
+apartments_clean_points$norm_transport <- (apartments_clean_points$transport - min(apartments_clean_points$transport))/
+  (max(apartments_clean_points$transport) - min(apartments_clean_points$transport))
+
+apartments_clean_points$norm_park <- (apartments_clean_points$park - min(apartments_clean_points$park))/
+  (max(apartments_clean_points$park) - min(apartments_clean_points$park))
+
+apartments_clean_points$norm_water <- (apartments_clean_points$water - min(apartments_clean_points$water))/
+  (max(apartments_clean_points$water) - min(apartments_clean_points$water))
 
 # Total score calculation
-apartments_clean_points$total_score_m <- apartments_clean_points$catering_m+apartments_clean_points$activities_m +
-  apartments_clean_points$destinations_m + apartments_clean_points$entertainment_m + apartments_clean_points$health_m +
-  apartments_clean_points$kids_m + apartments_clean_points$shopping_m + apartments_clean_points$park_m + apartments_clean_points$water_m
+apartments_clean_points$norm_total <- apartments_clean_points$norm_activities + apartments_clean_points$norm_catering +
+  apartments_clean_points$norm_destinations + apartments_clean_points$norm_entertainment + apartments_clean_points$norm_health +
+  apartments_clean_points$norm_kids + apartments_clean_points$norm_shopping + apartments_clean_points$norm_transport +
+  apartments_clean_points$norm_park + apartments_clean_points$norm_water
 
-# Total score normalized
-apartments_clean_points$total_score_normalized_m <- (apartments_clean_points$total_score_m - min(apartments_clean_points$total_score_m))/
-  (max(apartments_clean_points$total_score_m) - min(apartments_clean_points$total_score_m))
+# Total score re-normalized
+apartments_clean_points$norm_total_score <- (apartments_clean_points$norm_total - min(apartments_clean_points$norm_total))/
+  (max(apartments_clean_points$norm_total) - min(apartments_clean_points$norm_total)) + 0.5
 
 
 ### The landlord premium model
-# Calculater the total weight scores
-apartments_clean_points$score_total <- apartments_clean_points$total_score_normalized_m + apartments_clean_points$total_score_normalized_p
-
-# Normalize the total scores combined
-apartments_clean_points$total_score_normalized <- (apartments_clean_points$score_total - min(apartments_clean_points$score_total))/
-  (max(apartments_clean_points$score_total) - min(apartments_clean_points$score_total)) + 0.5
-
 # Calcualter the premium
 apartments_clean_points$premium <- apartments_clean_points$price - (apartments_clean_points$total_score_normalized *
   apartments_clean_points$model2_2)
 
 summary(apartments_clean_points$premium)
 b_shape <- st_union(berlin)
+
+# Adding up the scores
+apartments_clean_points$catering <- apartments_clean_points$catering_m + apartments_clean_points$catering_p
 
 ### PLOTS
 # Plotting the results
@@ -191,6 +169,7 @@ ggplot()+
   geom_sf(data = berlin)+
   geom_sf(data = apartments_clean_points, aes(color = total_score_normalized))+
   scale_color_jcolors_contin("pal2")+
+  labs(title = " TOTAL SCORE NORM", color = "SCORE")+
 {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
@@ -202,15 +181,16 @@ ggplot()+
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
-  )
-  }
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca"))
+}
 ggsave("score_total.png", dpi = 320, scale = 1)
 
 ggplot()+
   geom_sf(data = berlin)+
   geom_sf(data = apartments_clean_points, aes(color = catering))+
   scale_color_jcolors_contin("pal4")+
+  labs(title = "TOTAL SCORE CATERING", color = "SCORE")+
 {theme(
     panel.background = element_rect(fill = "#222222",
                                   colour = "#222222",
@@ -222,8 +202,8 @@ ggplot()+
     plot.background = element_rect(fill = "#222222"),
     legend.background = element_rect(fill = "#222222"),
     legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
-  )
+    legend.text = element_text(colour = "#cacaca"),
+    title = element_text(colour = "#cacaca"))
   }
 ggsave("score_catering.png", dpi = 320, scale = 1)
 
