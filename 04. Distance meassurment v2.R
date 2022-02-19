@@ -354,6 +354,50 @@ ggplot()+
 ggsave("score_transport.png", dpi = 320, scale = 1)
 }
 
+ggplot()+
+  geom_sf(data = berlin)+
+  geom_sf(data = apartments_clean_points, aes(color = park), size = 3, alpha = 0.8)+
+  scale_color_jcolors_contin("pal4")+
+    labs(title = "TOTAL SCORE PARKS", color = "SCORE, s_i")+
+  {theme(
+      panel.background = element_rect(fill = "#222222",
+                                    colour = "#222222",
+                                    size = 0.1, linetype = "solid"),
+      panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "white"),
+      panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "#222222"),
+      plot.background = element_rect(fill = "#222222"),
+      legend.background = element_rect(fill = "#222222"),
+      legend.title = element_text(colour = "#cacaca"),
+      legend.text = element_text(colour = "#cacaca"),
+      title = element_text(colour = "#cacaca"))
+  }
+ggsave("score_parks.png", dpi = 320, scale = 1)
+
+
+ggplot()+
+  geom_sf(data = berlin)+
+  geom_sf(data = apartments_clean_points, aes(color = water), size = 3, alpha = 0.8)+
+  scale_color_jcolors_contin("pal4")+
+    labs(title = "TOTAL SCORE WATER", color = "SCORE, s_i")+
+  {theme(
+      panel.background = element_rect(fill = "#222222",
+                                    colour = "#222222",
+                                    size = 0.1, linetype = "solid"),
+      panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "white"),
+      panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "#222222"),
+      plot.background = element_rect(fill = "#222222"),
+      legend.background = element_rect(fill = "#222222"),
+      legend.title = element_text(colour = "#cacaca"),
+      legend.text = element_text(colour = "#cacaca"),
+      title = element_text(colour = "#cacaca"))
+  }
+ggsave("score_water.png", dpi = 320, scale = 1)
+
+
 # Unfulfilled multipolygon idea
 {
 ggplot()+
@@ -404,6 +448,8 @@ mean(apartments_clean_points$premium)
 sd(apartments_clean_points$premium)
 ggplot()+
   geom_density(data = apartments_clean_points, aes(x = premium), color = "white")+
+  annotate(geom="text", x=350, y=0.0012, label="mean = -71.71371", color="white")+
+  annotate(geom="text", x=300, y=0.0013, label="sd = 258.6865", color="white")+
    {theme(
       panel.background = element_rect(fill = "#222222",
                                     colour = "#222222",
@@ -418,3 +464,4 @@ ggplot()+
       legend.text = element_text(colour = "#cacaca"),
       title = element_text(colour = "#cacaca"))
   }
+ggsave("Premiumsdist.png", dpi = 320, scale = 1)
