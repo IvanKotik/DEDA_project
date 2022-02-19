@@ -153,10 +153,9 @@ apartments_clean_points$norm_total_score <- (apartments_clean_points$norm_total 
 
 ### The landlord premium model
 # Calcualter the premium
-apartments_clean_points$premium <- apartments_clean_points$price - (apartments_clean_points$total_score_normalized *
+apartments_clean_points$premium <- apartments_clean_points$price - (apartments_clean_points$norm_total_score *
   apartments_clean_points$model2_2)
 
-summary(apartments_clean_points$premium)
 b_shape <- st_union(berlin)
 
 # Adding up the scores
@@ -166,184 +165,191 @@ apartments_clean_points$catering <- apartments_clean_points$catering_m + apartme
 # Plotting the results
 {
 ggplot()+
-  geom_sf(data = berlin)+
-  geom_sf(data = apartments_clean_points, aes(color = total_score_normalized))+
-  scale_color_jcolors_contin("pal2")+
-  labs(title = " TOTAL SCORE NORM", color = "SCORE")+
-{theme(
-    panel.background = element_rect(fill = "#222222",
-                                  colour = "#222222",
-                                  size = 0.1, linetype = "solid"),
-    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "white"),
-    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "#222222"),
-    plot.background = element_rect(fill = "#222222"),
-    legend.background = element_rect(fill = "#222222"),
-    legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#cacaca"),
-    title = element_text(colour = "#cacaca"))
-}
-ggsave("score_total.png", dpi = 320, scale = 1)
+  geom_sf(data = berlin, alpha = 0.6)+
+  geom_sf(data = apartments_clean_points, aes(color = norm_total_score), size = 3, alpha = 0.8)+
+  scale_color_jcolors_contin("pal4")+
+  labs(title = " TOTAL WEIGHT", color = "WEIGHT, w_i")+
+  {theme(
+      panel.background = element_rect(fill = "#222222",
+                                    colour = "#222222",
+                                    size = 0.1, linetype = "solid"),
+      panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "white"),
+      panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "#222222"),
+      plot.background = element_rect(fill = "#222222"),
+      legend.background = element_rect(fill = "#222222"),
+      legend.title = element_text(colour = "#cacaca"),
+      legend.text = element_text(colour = "#cacaca"),
+      title = element_text(colour = "#cacaca"))
+  }
+ggsave("weight_total.png", dpi = 320, scale = 1)
 
 ggplot()+
-  geom_sf(data = berlin)+
-  geom_sf(data = apartments_clean_points, aes(color = catering))+
+  geom_sf(data = berlin, alpha = 0.6)+
+  geom_sf(data = apartments_clean_points, aes(color = catering), size = 3, alpha = 0.8)+
   scale_color_jcolors_contin("pal4")+
-  labs(title = "TOTAL SCORE CATERING", color = "SCORE")+
-{theme(
-    panel.background = element_rect(fill = "#222222",
-                                  colour = "#222222",
-                                  size = 0.1, linetype = "solid"),
-    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "white"),
-    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "#222222"),
-    plot.background = element_rect(fill = "#222222"),
-    legend.background = element_rect(fill = "#222222"),
-    legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#cacaca"),
-    title = element_text(colour = "#cacaca"))
+  labs(title = "TOTAL SCORE CATERING", color = "SCORE, s_i")+
+  {theme(
+      panel.background = element_rect(fill = "#222222",
+                                    colour = "#222222",
+                                    size = 0.1, linetype = "solid"),
+      panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "white"),
+      panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "#222222"),
+      plot.background = element_rect(fill = "#222222"),
+      legend.background = element_rect(fill = "#222222"),
+      legend.title = element_text(colour = "#cacaca"),
+      legend.text = element_text(colour = "#cacaca"),
+      title = element_text(colour = "#cacaca"))
   }
 ggsave("score_catering.png", dpi = 320, scale = 1)
 
 ggplot()+
-  geom_sf(data = berlin)+
-  geom_sf(data = apartments_clean_points, aes(color = activities))+
+  geom_sf(data = berlin, alpha = 0.6)+
+  geom_sf(data = apartments_clean_points, aes(color = activities), size = 3, alpha = 0.8)+
   scale_color_jcolors_contin("pal4")+
-{theme(
-    panel.background = element_rect(fill = "#222222",
-                                  colour = "#222222",
-                                  size = 0.1, linetype = "solid"),
-    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "white"),
-    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "#222222"),
-    plot.background = element_rect(fill = "#222222"),
-    legend.background = element_rect(fill = "#222222"),
-    legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
-  )
+  labs(title = "TOTAL SCORE ACTIVITIES", color = "SCORE, s_i")+
+  {theme(
+      panel.background = element_rect(fill = "#222222",
+                                    colour = "#222222",
+                                    size = 0.1, linetype = "solid"),
+      panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "white"),
+      panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "#222222"),
+      plot.background = element_rect(fill = "#222222"),
+      legend.background = element_rect(fill = "#222222"),
+      legend.title = element_text(colour = "#cacaca"),
+      legend.text = element_text(colour = "#cacaca"),
+      title = element_text(colour = "#cacaca"))
   }
 ggsave("score_activities.png", dpi = 320, scale = 1)
 
 ggplot()+
   geom_sf(data = berlin)+
-  geom_sf(data = apartments_clean_points, aes(color = destinations))+
+  geom_sf(data = apartments_clean_points, aes(color = destinations), size = 3, alpha = 0.8)+
   scale_color_jcolors_contin("pal4")+
-{theme(
-    panel.background = element_rect(fill = "#222222",
-                                  colour = "#222222",
-                                  size = 0.1, linetype = "solid"),
-    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "white"),
-    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "#222222"),
-    plot.background = element_rect(fill = "#222222"),
-    legend.background = element_rect(fill = "#222222"),
-    legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
-  )
+  labs(title = "TOTAL SCORE DESTINATIONS", color = "SCORE, s_i")+
+  {theme(
+      panel.background = element_rect(fill = "#222222",
+                                    colour = "#222222",
+                                    size = 0.1, linetype = "solid"),
+      panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "white"),
+      panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "#222222"),
+      plot.background = element_rect(fill = "#222222"),
+      legend.background = element_rect(fill = "#222222"),
+      legend.title = element_text(colour = "#cacaca"),
+      legend.text = element_text(colour = "#cacaca"),
+      title = element_text(colour = "#cacaca"))
   }
 ggsave("score_destinations.png", dpi = 320, scale = 1)
 
 ggplot()+
   geom_sf(data = berlin)+
-  geom_sf(data = apartments_clean_points, aes(color = entertainment))+
+  geom_sf(data = apartments_clean_points, aes(color = entertainment), size = 3, alpha = 0.8)+
   scale_color_jcolors_contin("pal4")+
-{theme(
-    panel.background = element_rect(fill = "#222222",
-                                  colour = "#222222",
-                                  size = 0.1, linetype = "solid"),
-    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "white"),
-    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "#222222"),
-    plot.background = element_rect(fill = "#222222"),
-    legend.background = element_rect(fill = "#222222"),
-    legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
-  )
+    labs(title = "TOTAL SCORE ENTERTAINMENT", color = "SCORE, s_i")+
+  {theme(
+      panel.background = element_rect(fill = "#222222",
+                                    colour = "#222222",
+                                    size = 0.1, linetype = "solid"),
+      panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "white"),
+      panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "#222222"),
+      plot.background = element_rect(fill = "#222222"),
+      legend.background = element_rect(fill = "#222222"),
+      legend.title = element_text(colour = "#cacaca"),
+      legend.text = element_text(colour = "#cacaca"),
+      title = element_text(colour = "#cacaca"))
   }
 ggsave("score_entertainment.png", dpi = 320, scale = 1)
 
 ggplot()+
   geom_sf(data = berlin)+
-  geom_sf(data = apartments_clean_points, aes(color = health))+
+  geom_sf(data = apartments_clean_points, aes(color = health), size = 3, alpha = 0.8)+
   scale_color_jcolors_contin("pal4")+
-{theme(
-    panel.background = element_rect(fill = "#222222",
-                                  colour = "#222222",
-                                  size = 0.1, linetype = "solid"),
-    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "white"),
-    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "#222222"),
-    plot.background = element_rect(fill = "#222222"),
-    legend.background = element_rect(fill = "#222222"),
-    legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
-  )
+    labs(title = "TOTAL SCORE HEALTH", color = "SCORE, s_i")+
+  {theme(
+      panel.background = element_rect(fill = "#222222",
+                                    colour = "#222222",
+                                    size = 0.1, linetype = "solid"),
+      panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "white"),
+      panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "#222222"),
+      plot.background = element_rect(fill = "#222222"),
+      legend.background = element_rect(fill = "#222222"),
+      legend.title = element_text(colour = "#cacaca"),
+      legend.text = element_text(colour = "#cacaca"),
+      title = element_text(colour = "#cacaca"))
   }
 ggsave("score_health.png", dpi = 320, scale = 1)
 
 ggplot()+
   geom_sf(data = berlin)+
-  geom_sf(data = apartments_clean_points, aes(color = kids))+
+  geom_sf(data = apartments_clean_points, aes(color = kids), size = 3, alpha = 0.8)+
   scale_color_jcolors_contin("pal4")+
-{theme(
-    panel.background = element_rect(fill = "#222222",
-                                  colour = "#222222",
-                                  size = 0.1, linetype = "solid"),
-    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "white"),
-    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "#222222"),
-    plot.background = element_rect(fill = "#222222"),
-    legend.background = element_rect(fill = "#222222"),
-    legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
-  )
+    labs(title = "TOTAL SCORE KIDS", color = "SCORE, s_i")+
+  {theme(
+      panel.background = element_rect(fill = "#222222",
+                                    colour = "#222222",
+                                    size = 0.1, linetype = "solid"),
+      panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "white"),
+      panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "#222222"),
+      plot.background = element_rect(fill = "#222222"),
+      legend.background = element_rect(fill = "#222222"),
+      legend.title = element_text(colour = "#cacaca"),
+      legend.text = element_text(colour = "#cacaca"),
+      title = element_text(colour = "#cacaca"))
   }
 ggsave("score_kids.png", dpi = 320, scale = 1)
 
 ggplot()+
   geom_sf(data = berlin)+
-  geom_sf(data = apartments_clean_points, aes(color = shopping))+
+  geom_sf(data = apartments_clean_points, aes(color = shopping), size = 3, alpha = 0.8)+
   scale_color_jcolors_contin("pal4")+
-{theme(
-    panel.background = element_rect(fill = "#222222",
-                                  colour = "#222222",
-                                  size = 0.1, linetype = "solid"),
-    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "white"),
-    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "#222222"),
-    plot.background = element_rect(fill = "#222222"),
-    legend.background = element_rect(fill = "#222222"),
-    legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
-  )
+    labs(title = "TOTAL SCORE SHOPPING", color = "SCORE, s_i")+
+  {theme(
+      panel.background = element_rect(fill = "#222222",
+                                    colour = "#222222",
+                                    size = 0.1, linetype = "solid"),
+      panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "white"),
+      panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "#222222"),
+      plot.background = element_rect(fill = "#222222"),
+      legend.background = element_rect(fill = "#222222"),
+      legend.title = element_text(colour = "#cacaca"),
+      legend.text = element_text(colour = "#cacaca"),
+      title = element_text(colour = "#cacaca"))
   }
 ggsave("score_shopping.png", dpi = 320, scale = 1)
 
 ggplot()+
   geom_sf(data = berlin)+
-  geom_sf(data = apartments_clean_points, aes(color = transport))+
+  geom_sf(data = apartments_clean_points, aes(color = transport), size = 3, alpha = 0.8)+
   scale_color_jcolors_contin("pal4")+
-{theme(
-    panel.background = element_rect(fill = "#222222",
-                                  colour = "#222222",
-                                  size = 0.1, linetype = "solid"),
-    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "white"),
-    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "#222222"),
-    plot.background = element_rect(fill = "#222222"),
-    legend.background = element_rect(fill = "#222222"),
-    legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
-  )
+    labs(title = "TOTAL SCORE TRANSPORT", color = "SCORE, s_i")+
+  {theme(
+      panel.background = element_rect(fill = "#222222",
+                                    colour = "#222222",
+                                    size = 0.1, linetype = "solid"),
+      panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "white"),
+      panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "#222222"),
+      plot.background = element_rect(fill = "#222222"),
+      legend.background = element_rect(fill = "#222222"),
+      legend.title = element_text(colour = "#cacaca"),
+      legend.text = element_text(colour = "#cacaca"),
+      title = element_text(colour = "#cacaca"))
   }
 ggsave("score_transport.png", dpi = 320, scale = 1)
 }
@@ -353,65 +359,62 @@ ggsave("score_transport.png", dpi = 320, scale = 1)
 ggplot()+
   geom_sf(data = multipolygon)+
   geom_sf(data = st_buffer(apartments_clean_points[1:10,], set_units(2000, m)), color = "red", alpha = 0.5)+
-{theme(
-    panel.background = element_rect(fill = "#222222",
-                                  colour = "#222222",
-                                  size = 0.1, linetype = "solid"),
-    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "white"),
-    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "#222222"),
-    plot.background = element_rect(fill = "#222222"),
-    legend.background = element_rect(fill = "#222222"),
-    legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#545454")
-  )
-  }
+  {theme(
+      panel.background = element_rect(fill = "#222222",
+                                    colour = "#222222",
+                                    size = 0.1, linetype = "solid"),
+      panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "white"),
+      panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "#222222"),
+      plot.background = element_rect(fill = "#222222"),
+      legend.background = element_rect(fill = "#222222"),
+      legend.title = element_text(colour = "#cacaca"),
+      legend.text = element_text(colour = "#cacaca"),
+      title = element_text(colour = "#cacaca"))
+}
 ggsave("buffers.png", dpi = 320, scale = 1)
 }
 
 # Premiums visualized
 ggplot()+
   geom_sf(data = berlin, fill = "white", alpha = 0.5)+
-  geom_sf(data = apartments_clean_points, aes(color = premium))+
+  geom_sf(data = apartments_clean_points, aes(color = premium), size = 3, alpha = 0.8)+
   scale_color_jcolors_contin("pal4")+
   labs(title = "LANDLORD PREMIUM", color = "PREMIUM")+
   {theme(
-    panel.background = element_rect(fill = "#222222",
-                                  colour = "#222222",
-                                  size = 0.1, linetype = "solid"),
-    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "white"),
-    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "#222222"),
-    plot.background = element_rect(fill = "#222222"),
-    legend.background = element_rect(fill = "#222222"),
-    legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#cacaca"),
-    title = element_text(colour = "#cacaca")
-  )
+      panel.background = element_rect(fill = "#222222",
+                                    colour = "#222222",
+                                    size = 0.1, linetype = "solid"),
+      panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "white"),
+      panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "#222222"),
+      plot.background = element_rect(fill = "#222222"),
+      legend.background = element_rect(fill = "#222222"),
+      legend.title = element_text(colour = "#cacaca"),
+      legend.text = element_text(colour = "#cacaca"),
+      title = element_text(colour = "#cacaca"))
   }
 ggsave("Premiums.png", dpi = 320, scale = 1)
 
-# Total scores normalized
+# Distribution of premium
+summary(apartments_clean_points$premium)
+mean(apartments_clean_points$premium)
+sd(apartments_clean_points$premium)
 ggplot()+
-  geom_sf(data = berlin, fill = "white", alpha = 0.5)+
-  geom_sf(data = apartments_clean_points, aes(color = total_score_normalized))+
-  scale_color_jcolors_contin("pal2")+
-  labs(title = "TOTAL SCORE, NORMALIZED", color = "SCORE")+
-  {theme(
-    panel.background = element_rect(fill = "#222222",
-                                  colour = "#222222",
-                                  size = 0.1, linetype = "solid"),
-    panel.grid.major = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "white"),
-    panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
-                                  colour = "#222222"),
-    plot.background = element_rect(fill = "#222222"),
-    legend.background = element_rect(fill = "#222222"),
-    legend.title = element_text(colour = "#cacaca"),
-    legend.text = element_text(colour = "#cacaca"),
-    title = element_text(colour = "#cacaca")
-  )
+  geom_density(data = apartments_clean_points, aes(x = premium), color = "white")+
+   {theme(
+      panel.background = element_rect(fill = "#222222",
+                                    colour = "#222222",
+                                    size = 0.1, linetype = "solid"),
+      panel.grid.major = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "white"),
+      panel.grid.minor = element_line(size = 0.1, linetype = 'solid',
+                                    colour = "#222222"),
+      plot.background = element_rect(fill = "#222222"),
+      legend.background = element_rect(fill = "#222222"),
+      legend.title = element_text(colour = "#cacaca"),
+      legend.text = element_text(colour = "#cacaca"),
+      title = element_text(colour = "#cacaca"))
   }
-ggsave("Scores_normalized.png", dpi = 320, scale = 1)
